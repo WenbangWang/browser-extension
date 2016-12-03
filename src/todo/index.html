@@ -1,0 +1,36 @@
+<div class='container'>
+
+  <div class='row'>
+    <div class='col-md-12'>
+      <h5>{{ (vm.todoList | filter: {completed:false}).length}} pending task(s)</h5>
+      <form id='todo-form' ng-submit='vm.add()'>
+        <div class="form-group">
+          <input type='text' id='new-todo' ng-model='vm.newContent' class="form-control"
+                 placeholder="What you need to do ?"/>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class='row' id="todo-list">
+    <div class='todo-item col-md-12' ng-repeat="todo in vm.todoList | orderBy: 'createdAt' track by todo.id"
+         ng-class='{completed: todo.completed}'>
+      <input type='checkbox' ng-model="todo.completed" ng-click='vm.toggleCompleted()'/>
+      <span class='todo-content'>{{todo.content}}</span>
+      <a class='btn-remove-todo pull-right' ng-click='vm.remove(todo)'><i class='glyphicon glyphicon-remove'></i> </a>
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-md-12'>
+      <div id='toolbar'>
+        <a id="btn-remove-all"
+           ng-click='vm.removeAll()'
+           class='btn btn-small btn-default pull-right'
+           ng-show="vm.todoList.length > 0">
+          <i class="glyphicon glyphicon-remove"></i> Clear all
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
