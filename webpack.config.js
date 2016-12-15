@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const bootstrapExtractTextPlugin = new ExtractTextPlugin('bootstrap.css')
+const appExtractTextPlugin = new ExtractTextPlugin('styles.css')
 
 const config = {
   entry: {
@@ -19,7 +21,7 @@ const config = {
     loaders: [
       {
         test: /bootstrap\/(.*)\.css$/,
-        loader: ExtractTextPlugin.extract('css-loader?sourceMap')
+        loader: bootstrapExtractTextPlugin.extract('css-loader?sourceMap')
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -53,7 +55,7 @@ const config = {
         // TODO hook editing to browser see https://github.com/webpack/css-loader and https://medium.com/@toolmantim/getting-started-with-css-sourcemaps-and-in-browser-sass-editing-b4daab987fb0#.1tmdpau2c
         test: /\.scss/,
         exclude: /node_modules/,
-        loader: ExtractTextPlugin.extract(
+        loader: appExtractTextPlugin.extract(
           'css-loader?sourceMap!sass-loader?sourceMap'
         )
       },
@@ -69,7 +71,8 @@ const config = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
+    bootstrapExtractTextPlugin,
+    appExtractTextPlugin,
     // checkout webpack-md5-hash plugin
     new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
     new webpack.ProvidePlugin({
