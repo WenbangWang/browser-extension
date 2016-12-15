@@ -4,7 +4,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
   entry: {
-    app: ['./src/core/bootstrap.js'],
+    app: ['./src/app/core/bootstrap.js'],
     vendor: ['angular', 'bootstrap/dist/js/bootstrap', 'jquery']
   },
   output: {
@@ -76,8 +76,7 @@ const config = {
       $: "jquery",
       jQuery: "jquery"
     })
-  ],
-  devtool: 'inline-source-map'
-};
+  ]
+}
 
-module.exports = config;
+module.exports = config

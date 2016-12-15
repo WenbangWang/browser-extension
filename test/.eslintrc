@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "standard"
+  ],
+  "plugins": [
+    "mocha"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "mocha": true
+  }
+}

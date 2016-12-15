@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "grunt": "./node_modules/.bin/grunt"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -15,17 +16,37 @@
     "jquery": "^3.1.1"
   },
   "devDependencies": {
+    "blanket": "^1.2.3",
     "css-loader": "^0.26.0",
+    "eslint": "^3.12.2",
+    "eslint-config-angular": "^0.5.0",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-angular": "^1.5.0",
+    "eslint-plugin-mocha": "^4.7.0",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "express": "^4.14.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
-    "less": "^2.7.1",
-    "less-loader": "^2.2.3",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-concurrent": "^2.3.1",
+    "grunt-eslint": "^19.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "grunt-nodemon": "^0.4.2",
+    "grunt-webpack": "^1.0.18",
+    "istanbul": "^0.4.5",
+    "load-grunt-config": "^0.19.2",
+    "lodash": "^4.17.2",
+    "mocha": "^3.2.0",
     "ng-annotate-loader": "^0.2.0",
     "node-sass": "^3.13.0",
     "raw-loader": "^0.5.1",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
+    "time-grunt": "^1.4.0",
     "url-loader": "^0.5.7",
-    "webpack": "^1.13.3"
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
   }
 }

@@ -12,7 +12,7 @@ class TodoService {
         for (var i = 0; i < this.data.length; i++) {
           this.data[i]['id'] = i + 1
         }
-        console.log(this.data)
+        // console.log(this.data)
         callback(this.data)
       }
     })
@@ -20,7 +20,7 @@ class TodoService {
 
   sync () {
     chrome.storage.sync.set({todo: this.data}, function () {
-      console.log('Data is stored in Chrome storage')
+      // console.log('Data is stored in Chrome storage')
     })
   }
 
