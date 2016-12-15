@@ -7,6 +7,6 @@ module.exports = {
       reporter: 'spec',
       quiet: false
     },
-    src: ['test/**/*.spec.js']
+    src: ['<%= test.filePattern %>']
   }
 }

@@ -14,7 +14,11 @@ module.exports = grunt => {
         path: '<%= src.path %>/app'
       },
       test: {
-        path: 'test'
+        path: 'test',
+        filePattern: '<%= test.path %>/**/*.js'
+      },
+      coverage: {
+        path: 'coverage'
       }
     }
   })

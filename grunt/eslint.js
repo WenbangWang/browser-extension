@@ -16,6 +16,6 @@ module.exports = {
     options: {
       configFile: '<%= test.path %>/.eslintrc'
     },
-    src: ['<%= test.path %>/**/*.spec.js']
+    src: ['<%= test.filePattern %>']
   }
 }
