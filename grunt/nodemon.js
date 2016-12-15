@@ -8,7 +8,7 @@ module.exports = {
       ignore: ['!stub/**'],
       watch: ['stub', 'grunt/nodemon.js'],
       args: [
-        '10000'
+        '9000'
       ]
     }
   }
