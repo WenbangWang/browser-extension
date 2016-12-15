@@ -3,10 +3,11 @@
 module.exports = () => {
   return {
     test: [
+      'eslint:test',
       'mocha_istanbul'
     ],
     'test:coverage': [
-      'mocha_istanbul',
+      'test',
       'istanbul_check_coverage'
     ]
   }
