@@ -19,6 +19,10 @@ module.exports = grunt => {
       },
       coverage: {
         path: 'coverage'
+      },
+      stub: {
+        path: 'stub',
+        port: '9000'
       }
     }
   })

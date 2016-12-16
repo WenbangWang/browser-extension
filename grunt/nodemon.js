@@ -2,13 +2,13 @@
 
 module.exports = {
   stub: {
-    script: 'stub/server.js',
+    script: '<%= stub.path %>/server.js',
     options: {
       ext: 'js, json, html',
-      ignore: ['!stub/**'],
-      watch: ['stub', 'grunt/nodemon.js'],
+      ignore: ['!<%= stub.path %>/**'],
+      watch: ['<%= stub.path %>', 'grunt/nodemon.js'],
       args: [
-        '9000'
+        '<%= stub.port %>'
       ]
     }
   }
