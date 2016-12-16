@@ -8,7 +8,7 @@ module.exports = grunt => {
       webpack: webpackConfig
     },
 
-    start: {
+    default: {
       keepAlive: true,
       webpack: {
         devtool: '#inline-source-map',
