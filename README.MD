@@ -20,6 +20,16 @@ There are a couple of ways to use `grunt`.
 
 Either way above works fine. Choose anyone you preferred. 
 
+# Folder Structure
+
+```
+/grunt  - grunt tasks
+/src    - source files
+    /app    - application
+/stub   - stub server
+/test   - test folder
+```
+
 # Development
 
 ## Application
