@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "grunt": "./node_modules/.bin/grunt"
   },
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "angular": "^1.5.9",
+    "angular": "^1.6.0",
     "axios": "^0.15.3",
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.1"
