@@ -1,12 +1,14 @@
 'use strict'
 
+const browser = require('../../browser-api')
+
 class TodoService {
   constructor () {
     this.data = []
   }
 
   findAll (callback) {
-    chrome.storage.sync.get('todo', keys => {
+    browser.storage.sync.get('todo', keys => {
       if (keys.todo != null) {
         this.data = keys.todo
         for (var i = 0; i < this.data.length; i++) {
@@ -19,7 +21,7 @@ class TodoService {
   }
 
   sync () {
-    chrome.storage.sync.set({todo: this.data}, function () {
+    browser.storage.sync.set({todo: this.data}, function () {
       // console.log('Data is stored in Chrome storage')
     })
   }

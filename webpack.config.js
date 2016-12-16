@@ -73,6 +73,8 @@ const config = {
   plugins: [
     bootstrapExtractTextPlugin,
     appExtractTextPlugin,
+    // Replace browser api with mock api
+    new webpack.NormalModuleReplacementPlugin(/(browser-api)$/, result => (result.request = result.request.replace(/(browser-api)$/, '$1-mock'))),
     // checkout webpack-md5-hash plugin
     new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
     new webpack.ProvidePlugin({
