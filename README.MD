@@ -26,6 +26,8 @@ Either way above works fine. Choose anyone you preferred.
 /grunt  - grunt tasks
 /src    - source files
     /app    - application
+    /browser-api    - A wrapper over browser extension api
+    /browser-api-mock   - A mocked version of the api wrapper
 /stub   - stub server
 /test   - test folder
 ```
