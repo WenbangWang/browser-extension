@@ -5,9 +5,13 @@ module.exports = () => {
     dev: [],
 
     'dev:app': [
+      'eslint:app',
       'concurrent:dev-app'
     ],
 
-    'dev:extension': []
+    'dev:extension': [
+      'clean:build',
+      'webpack'
+    ]
   }
 }

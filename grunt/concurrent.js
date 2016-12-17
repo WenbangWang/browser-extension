@@ -6,7 +6,6 @@ module.exports = {
   },
 
   'dev-app': [
-    'eslint:app',
     'webpack-dev-server',
     'nodemon:stub'
   ]

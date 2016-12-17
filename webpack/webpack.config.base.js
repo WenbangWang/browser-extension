@@ -3,14 +3,16 @@ const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const bootstrapExtractTextPlugin = new ExtractTextPlugin('bootstrap.css')
 const appExtractTextPlugin = new ExtractTextPlugin('styles.css')
+const rootPath = path.resolve(__dirname, '..')
+const outputPath = path.resolve(rootPath, 'build')
 
 const config = {
   entry: {
-    app: ['./src/app/core/bootstrap.js'],
+    app: './src/app/core/bootstrap.js',
     vendor: ['angular', 'bootstrap/dist/js/bootstrap', 'jquery']
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: outputPath,
     filename: '[name].js'
   },
   resolve: {
@@ -73,15 +75,16 @@ const config = {
   plugins: [
     bootstrapExtractTextPlugin,
     appExtractTextPlugin,
-    // Replace browser api with mock api
-    new webpack.NormalModuleReplacementPlugin(/(browser-api)$/, result => (result.request = result.request.replace(/(browser-api)$/, '$1-mock'))),
     // checkout webpack-md5-hash plugin
     new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"
     })
-  ]
+  ],
+  devtool: '#inline-source-map'
+
 }
 
 module.exports = config
+module.exports.rootPath = rootPath

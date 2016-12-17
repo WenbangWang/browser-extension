@@ -12,6 +12,7 @@ module.exports = {
     },
     src: ['<%= app.path %>/**/*.js']
   },
+
   test: {
     options: {
       configFile: '<%= test.path %>/.eslintrc'

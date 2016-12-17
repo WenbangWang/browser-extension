@@ -1,6 +1,6 @@
 'use strict'
 
-const webpackConfig = require('../webpack.config')
+const webpackConfig = require('../webpack/webpack.config.dev.app')
 
 module.exports = grunt => {
   return {
@@ -11,7 +11,6 @@ module.exports = grunt => {
     default: {
       keepAlive: true,
       webpack: {
-        devtool: '#inline-source-map',
         debug: grunt.option('debug')
       }
     }

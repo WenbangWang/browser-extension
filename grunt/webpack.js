@@ -1,9 +1,13 @@
 'use strict'
 
-const webpackConfig = require('../webpack.config')
+const webpackConfig = require('../webpack/webpack.config.dev.extension')
 
-module.exports = {
-  options: webpackConfig,
+module.exports = grunt => {
+  return {
+    options: webpackConfig,
 
-  build: {}
+    default: {
+      debug: grunt.option('debug')
+    }
+  }
 }

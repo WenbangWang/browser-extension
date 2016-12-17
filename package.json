@@ -29,10 +29,13 @@
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-concurrent": "^2.3.1",
+    "grunt-contrib-clean": "^1.0.0",
     "grunt-eslint": "^19.0.0",
     "grunt-mocha-istanbul": "^5.0.2",
     "grunt-nodemon": "^0.4.2",
     "grunt-webpack": "^1.0.18",
+    "html-webpack-exclude-assets-plugin": "0.0.3",
+    "html-webpack-plugin": "^2.24.1",
     "istanbul": "^0.4.5",
     "load-grunt-config": "^0.19.2",
     "lodash": "^4.17.2",
@@ -46,6 +49,7 @@
     "time-grunt": "^1.4.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.3",
-    "webpack-dev-server": "^1.16.2"
+    "webpack-dev-server": "^1.16.2",
+    "webpack-merge": "^1.1.1"
   }
 }
