@@ -4,19 +4,18 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const bootstrapExtractTextPlugin = new ExtractTextPlugin('bootstrap.css')
 const appExtractTextPlugin = new ExtractTextPlugin('styles.css')
 const rootPath = path.resolve(__dirname, '..')
-const outputPath = path.resolve(rootPath, 'build')
 
+// TODO extract config
 const config = {
   entry: {
     app: './src/app/core/bootstrap.js',
     vendor: ['angular', 'bootstrap/dist/js/bootstrap', 'jquery']
   },
   output: {
-    path: outputPath,
     filename: '[name].js'
   },
   resolve: {
-    root: __dirname + '/src/'
+    root: path.resolve(rootPath, '../src')
   },
   module: {
     noParse: [],

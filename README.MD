@@ -30,6 +30,7 @@ Either way above works fine. Choose anyone you preferred.
     /browser-api-mock   - A mocked version of the api wrapper
 /stub   - stub server
 /test   - test folder
+/webpack    - webpack config
 ```
 
 # Development

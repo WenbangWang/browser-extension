@@ -2,5 +2,5 @@
 
 module.exports = {
   coverage: ['<%= coverage.path %>'],
-  build: ['<%= build.path %>']
+  manifest: ['<%= manifest.path %>']
 }

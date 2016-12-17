@@ -6,7 +6,6 @@
   "version": "0.1",
   "background": {
     "scripts": [
-      "node_modules/axios/dist/axios.js",
       "background.js"
     ]
   },

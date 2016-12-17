@@ -24,8 +24,8 @@ module.exports = grunt => {
         path: 'stub',
         port: '9000'
       },
-      build: {
-        path: 'build'
+      manifest: {
+        path: 'manifest'
       }
     }
   })

@@ -10,8 +10,10 @@ module.exports = () => {
     ],
 
     'dev:extension': [
-      'clean:build',
-      'webpack'
+      'clean:manifest',
+      'webpack:app',
+      'webpack:script',
+      'manifest:dev'
     ]
   }
 }
