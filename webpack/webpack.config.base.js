@@ -5,7 +5,6 @@ const bootstrapExtractTextPlugin = new ExtractTextPlugin('bootstrap.css')
 const appExtractTextPlugin = new ExtractTextPlugin('styles.css')
 const rootPath = path.resolve(__dirname, '..')
 
-// TODO extract config
 const config = {
   entry: {
     app: './src/app/core/bootstrap.js',

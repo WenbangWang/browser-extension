@@ -35,7 +35,6 @@
     "grunt-mocha-istanbul": "^5.0.2",
     "grunt-nodemon": "^0.4.2",
     "grunt-webpack": "^1.0.18",
-    "html-webpack-exclude-assets-plugin": "0.0.3",
     "html-webpack-plugin": "^2.24.1",
     "istanbul": "^0.4.5",
     "jsonfile": "^2.4.0",
