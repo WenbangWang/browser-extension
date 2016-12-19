@@ -13,7 +13,8 @@ module.exports = () => {
       'clean:manifest',
       'webpack:app',
       'webpack:script',
-      'manifest:dev'
+      'manifest:dev',
+      'nodemon:stub'
     ]
   }
 }
