@@ -7,7 +7,7 @@ const rootPath = path.resolve(__dirname, '..')
 
 const config = {
   entry: {
-    app: './src/app/core/bootstrap.js',
+    app: ['./src/app/core/bootstrap.js'],
     vendor: ['angular', 'bootstrap/dist/js/bootstrap', 'jquery']
   },
   output: {
@@ -66,7 +66,8 @@ const config = {
       },
       {
         test: /\.html$/,
-        loader: 'raw'
+        exclude: /node_modules/,
+        loader: 'ngtemplate?requireAngular!html'
       }
     ]
   },

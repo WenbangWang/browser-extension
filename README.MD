@@ -42,4 +42,9 @@ Either way above works fine. Choose anyone you preferred.
 
 ## Unit Test
 
+All test files should follow the naming pattern `*.spec.js`. Otherwise, it will not be loaded into testing environment.
+
 Run `grunt test` to test all the source files. It uses `mocha` and `istanbul` under the hood to test and generate test coverage. So you can also run `mocha` directly to test individual file like `./node_modules/.bin/mocha ${file path}`. 
+
+# Deployment
+TBD

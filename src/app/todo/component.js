@@ -1,11 +1,11 @@
 'use strict'
 
-const template = require('./index.html')
+const templateUrl = require('./index.html')
 const controller = require('./Controller')
 const controllerAs = 'vm'
 
 const component = {
-  template,
+  templateUrl,
   controller,
   controllerAs
 }

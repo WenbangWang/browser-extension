@@ -15,14 +15,14 @@ module.exports = grunt => {
       },
       test: {
         path: 'test',
-        filePattern: '<%= test.path %>/**/*.js'
+        filePattern: '<%= test.path %>/**/*.spec.js'
       },
       coverage: {
         path: 'coverage'
       },
       stub: {
         path: 'stub',
-        port: '9000'
+        port: '9090'
       },
       manifest: {
         path: 'manifest'
