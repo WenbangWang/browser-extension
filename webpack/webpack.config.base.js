@@ -60,14 +60,19 @@ const config = {
         )
       },
       {
-        test: /\.js$/,
+        test: /src.*\.js$/,
         exclude: /node_modules/,
         loader: 'ng-annotate'
       },
       {
         test: /\.html$/,
-        exclude: /node_modules/,
+        exclude: /node_modules|(template\.html)/,
         loader: 'ngtemplate?requireAngular!html'
+      },
+      {
+        test: /\.properties$/,
+        exclude: /node_modules/,
+        loader: 'properties'
       }
     ]
   },

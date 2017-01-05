@@ -1,6 +1,8 @@
 'use strict'
 
 class Controller {
+
+  /* @ngInject */
   constructor ($scope, todoService, $http) {
     this._todoService = todoService
     $scope.$watch('vm._todoService.data', () => {

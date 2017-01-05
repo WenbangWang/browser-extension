@@ -3,6 +3,8 @@
   <div class='row'>
     <div class='col-md-12'>
       <h5>{{ (vm.todoList | filter: {completed:false}).length}} pending task(s)</h5>
+      <p translate>{{'test'}}</p>
+      <p translate>{{'test.abc'}}</p>
       <form id='todo-form' ng-submit='vm.add()'>
         <div class="form-group">
           <input type='text' id='new-todo' ng-model='vm.newContent' class="form-control"

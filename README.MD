@@ -16,7 +16,7 @@ There are a couple of ways to use `grunt`.
  
 1. Install `grunt` cli globally using `npm install -g grunt-cli`. And you can run tasks by using `grunt` directly like `grunt ${task name}`
 2. Use local installed `grunt` cli (Already installed from [here](#install-dependencies)) and run the tasks like `./node_modules/.bin/grunt ${task name}`.
-3. Use shortcut in `npm scripts` which is a reference to `./node_modules/.bin/grunt` and run the tasks like `npm run grunt ${task name}. 
+3. Use shortcut in `npm scripts` which is a reference to `./node_modules/.bin/grunt` and run the tasks like `npm run grunt ${task name}`. 
 
 Either way above works fine. Choose anyone you preferred. 
 
@@ -24,6 +24,7 @@ Either way above works fine. Choose anyone you preferred.
 
 ```
 /grunt  - grunt tasks
+/locales    - language files
 /src    - source files
     /app    - application
     /browser-api    - A wrapper over browser extension api
@@ -36,6 +37,12 @@ Either way above works fine. Choose anyone you preferred.
 # Development
 
 ## Application
+
+### Overview
+The whole application uses `angular` to build and uses HTTP request to communicate between app and server. 
+
+### Internalization
+`angular-translate` is used for i18n purpose. [I18n Config](src/app/core/config/i18n.js) for configuring all the supported languages (For now, only English), loading `*.properties` files and converting `*.properties` files into `json` (by `webpack`). 
 
 
 ## Extension
