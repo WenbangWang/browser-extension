@@ -4,6 +4,6 @@
 
 describe('test', function () {
   it('should test', function () {
-    console.log(123)
+
   })
 })

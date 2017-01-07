@@ -7,5 +7,6 @@ const i18nConfig = require('./config/i18n')
 
 module.exports =
   angular
-    .module('app', [todo.name, angularTranslate])
+    .module('app', [todo, angularTranslate])
     .config(i18nConfig)
+    .name

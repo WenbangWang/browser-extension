@@ -3,3 +3,6 @@ node_modules/
 *.iml
 coverage/
 manifest/
+build/
+*.log
+log/

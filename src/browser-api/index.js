@@ -12,3 +12,4 @@
 const self = module.exports
 
 self.storage = chrome.storage
+self.runtime = chrome.runtime

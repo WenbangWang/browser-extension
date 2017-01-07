@@ -1,29 +1,32 @@
 'use strict'
 
-const browser = require('../../browser-api')
+// const browser = require('../../browser-api')
 
 class TodoService {
-  constructor () {
+  constructor (localStorageService) {
     this.data = []
+    this._localStorageService = localStorageService
   }
 
   findAll (callback) {
-    browser.storage.sync.get('todo', keys => {
-      if (keys.todo != null) {
-        this.data = keys.todo
-        for (var i = 0; i < this.data.length; i++) {
-          this.data[i]['id'] = i + 1
+    this._localStorageService.get('todo')
+      .then(keys => {
+        if (keys.todo != null) {
+          this.data = keys.todo
+          for (var i = 0; i < this.data.length; i++) {
+            this.data[i]['id'] = i + 1
+          }
+          // console.log(this.data)
+          callback(this.data)
         }
-        // console.log(this.data)
-        callback(this.data)
-      }
-    })
+      })
   }
 
   sync () {
-    browser.storage.sync.set({todo: this.data}, function () {
-      // console.log('Data is stored in Chrome storage')
-    })
+    this._localStorageService.set({todo: this.data})
+    // browser.storage.sync.set({todo: this.data}, function () {
+    //   // console.log('Data is stored in Chrome storage')
+    // })
   }
 
   add (newContent) {

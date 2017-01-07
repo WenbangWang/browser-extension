@@ -8,7 +8,7 @@ const rootPath = path.resolve(__dirname, '..')
 const config = {
   entry: {
     app: ['./src/app/core/bootstrap.js'],
-    vendor: ['angular', 'bootstrap/dist/js/bootstrap', 'jquery']
+    vendor: ['angular', 'angular-translate', 'bootstrap/dist/js/bootstrap', 'jquery']
   },
   output: {
     filename: '[name].js'
@@ -86,7 +86,7 @@ const config = {
       jQuery: "jquery"
     })
   ],
-  devtool: '#inline-source-map'
+  devtool: '#source-map'
 
 }
 

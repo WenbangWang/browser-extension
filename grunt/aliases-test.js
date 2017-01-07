@@ -4,12 +4,12 @@ module.exports = () => {
   return {
     test: [
       'eslint:test',
-      'mocha_istanbul'
+      'karma:unit'
     ],
     'test:coverage': [
+      'eslint:test',
       'clean:coverage',
-      'test',
-      'istanbul_check_coverage'
+      'karma:coverage'
     ]
   }
 }

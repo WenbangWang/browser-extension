@@ -1,19 +1,25 @@
 'use strict'
 
-class Sync {
+class StorageArea {
   constructor () {
     this._data = {}
   }
 
-  set (pair) {
+  set (pair, callback) {
     Object.keys(pair).forEach(key => (this._data[key] = pair[key]))
+    return callback || callback()
   }
 
-  get (key) {
+  get (key, callback) {
+    if (callback) {
+      return callback(this._data[key])
+    }
+
     return this._data[key]
   }
 }
 
 const self = module.exports
 
-self.sync = new Sync()
+self.sync = new StorageArea()
+self.local = new StorageArea()
