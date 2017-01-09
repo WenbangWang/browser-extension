@@ -10,8 +10,5 @@
   "rules": {
     "angular/module-setter": 0,
     "angular/no-service-method": 0
-  },
-  "globals": {
-    "chrome": true
   }
 }
