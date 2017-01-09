@@ -39,10 +39,15 @@ Either way above works fine. Choose anyone you preferred.
 ## Application
 
 ### Overview
-The whole application uses `angular` to build and uses HTTP request to communicate between app and server. 
+The whole application uses `angular` to build and uses HTTP to communicate between app and server. 
 
 ### Internalization
 `angular-translate` is used for i18n purpose. [I18n Config](src/app/core/config/i18n.js) for configuring all the supported languages (For now, only English), loading `*.properties` files and converting `*.properties` files into `json` (by `webpack`). 
+
+### Browser Extension API
+As mentioned in [folder structure](#folder-structure), there is a mocked version of browser extension api which will be used when build the application as a replacement of the actual browser extension api. Every time a new browser extension api is used, a mocked version of that api needs to be created accordingly.
+ 
+Browser extension api provides both `sync` version as well as `async` version for some methods. In order to unify apis, all the methods will use `async` version. The tricky part of using unified `async` apis is: it does not use the `errorback` style of callback, instead, it sets `runtime.lastError` when calls the callback. Also, you still need to apply the `async` calls into `angular` context. In order to make the apis standard across the app, a thin layer of wrapper is created for the purpose (See [here](src/app/browser)).
 
 
 ## Extension
