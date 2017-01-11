@@ -78,10 +78,10 @@ module.exports = function (config) {
     coverageReporter: {
       check: {
         global: {
-          statements: 70,
-          branches: 70,
-          functions: 70,
-          lines: 70,
+          statements: 100,
+          branches: 100,
+          functions: 100,
+          lines: 100,
           excludes: ['src/browser-api-mock/**/*.js']
         }
       },

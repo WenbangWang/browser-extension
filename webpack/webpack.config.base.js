@@ -8,7 +8,7 @@ const rootPath = path.resolve(__dirname, '..')
 const config = {
   entry: {
     app: ['./src/app/core/bootstrap.js'],
-    vendor: ['angular', 'angular-translate', 'bootstrap/dist/js/bootstrap', 'jquery']
+    vendor: ['angular', 'angular-translate', 'bootstrap/dist/js/bootstrap', 'jquery', 'stacktrace-js']
   },
   output: {
     filename: '[name].js'
@@ -73,6 +73,16 @@ const config = {
         test: /\.properties$/,
         exclude: /node_modules/,
         loader: 'properties'
+      },
+      // Add babel for better debugging with source map.
+      {
+        test: /\.js/,
+        exclude: [/node_modules/],
+        loader: 'babel',
+        query: {
+          presets: ['es2015'],
+          cacheDirectory: true
+        }
       }
     ]
   },
@@ -80,10 +90,10 @@ const config = {
     bootstrapExtractTextPlugin,
     appExtractTextPlugin,
     // checkout webpack-md5-hash plugin
-    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */"vendor", /* filename= */"vendor.bundle.js"),
+    new webpack.optimize.CommonsChunkPlugin(/* chunkName= */'vendor', /* filename= */'vendor.bundle.js'),
     new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
+      $: 'jquery',
+      jQuery: 'jquery'
     })
   ],
   devtool: '#source-map'

@@ -9,17 +9,27 @@ function logConfig ($provide) {
 
 /* @ngInject */
 function logDecorator ($delegate, $injector) {
-  const methods = ['log', 'info', 'warn', 'debug']
-  const originalReference = methods.map(method => $delegate[method])
-  const logStorageService = $injector.get('logStorageService')
+  const methods = ['log', 'info', 'warn', 'debug', 'error']
+  const originalReference = methods.reduce((map, method) => {
+    map[method] = $delegate[method]
+    return map
+  }, {})
 
   methods.forEach(method => {
     $delegate[method] = function () {
       const message = [].slice.call(arguments)
       originalReference[method].apply(null, arguments)
+      const logStorageService = $injector.get('logStorageService')
+      const potentialError = message[0]
+      let getStacktrace = Stacktrace.get()
 
-      Stacktrace.get().then(stacktrace => {
+      if (potentialError instanceof Error) {
+        getStacktrace = Stacktrace.fromError(potentialError)
+      }
+
+      getStacktrace.then(stacktrace => {
         const logBody = buildLogBody(method, message, stacktrace)
+
         logStorageService.add(logBody)
       })
     }

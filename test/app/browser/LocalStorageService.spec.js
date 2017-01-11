@@ -16,6 +16,9 @@ describe('LocalStorageService', function () {
   beforeEach(function () {
     sinon.stub(browser.storage.local, 'get')
     sinon.stub(browser.storage.local, 'set')
+  })
+
+  beforeEach(function () {
     localStorageService = new LocalStorageService($q)
   })
 
@@ -32,8 +35,8 @@ describe('LocalStorageService', function () {
       localStorageService.get('test')
         .then(val => {
           expect(val).to.equal(value)
-          done()
         })
+        .then(done, done)
 
       $scope.$apply()
     })
@@ -46,8 +49,8 @@ describe('LocalStorageService', function () {
         .catch(error => {
           expect(error).to.equal(browser.runtime.lastError)
           delete browser.runtime.lastError
-          done()
         })
+        .then(done, done)
 
       $scope.$apply()
     })
@@ -61,8 +64,8 @@ describe('LocalStorageService', function () {
       localStorageService.set('test')
         .then(val => {
           expect(val).to.equal(value)
-          done()
         })
+        .then(done, done)
 
       $scope.$apply()
     })
@@ -75,8 +78,8 @@ describe('LocalStorageService', function () {
         .catch(error => {
           expect(error).to.equal(browser.runtime.lastError)
           delete browser.runtime.lastError
-          done()
         })
+        .then(done, done)
 
       $scope.$apply()
     })

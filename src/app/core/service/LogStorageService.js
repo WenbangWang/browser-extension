@@ -10,14 +10,14 @@ const BASE_URL = 'http://localhost:9090'
 
 class LogStorageService {
   /* @ngInject */
-  constructor ($injector) {
+  constructor (localStorageService, $q, $http) {
     this._storage = []
     this._isFlushing = false
-    this._localStorageService = $injector.get('localStorageService')
+    this._localStorageService = localStorageService
     this._CONFIG = LOG_STORAGE_CONFIG
     this._BASE_URL = BASE_URL
-    this._$q = $injector.get('$q')
-    this._$http = $injector.get('$http')
+    this._$q = $q
+    this._$http = $http
   }
 
   getStorageSource () {
@@ -35,9 +35,13 @@ class LogStorageService {
           const storage = {}
           storage[this._CONFIG.name] = []
           this._localStorageService.set(storage)
-            .then(() => deferred.resolve(storage[this._CONFIG.name]))
+            .then(() => {
+              deferred.resolve(storage[this._CONFIG.name])
+            })
             // Fallback to in-memory storage when failed.
-            .catch(() => deferred.resolve(this._storage))
+            .catch(() => {
+              deferred.resolve(this._storage)
+            })
 
           return deferred.promise
         })
@@ -59,6 +63,7 @@ class LogStorageService {
           // Fallback to in-memory storage when failed.
             .catch(() => {
               // Only persist when the storage source is not in-memory storage.
+              // Since the log already pushed when getStorageSource is resolves at first place.
               if (source !== this._storage) {
                 this._storage.push(log)
               }
@@ -118,6 +123,7 @@ class LogStorageService {
 
       return postLog()
         .then(() => {
+          // Stop flushing immediately when posting succeeded.
           this._isFlushing = false
           const storage = {}
           storage[this._CONFIG.name] = this._storage

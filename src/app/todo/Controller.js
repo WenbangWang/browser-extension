@@ -3,11 +3,10 @@
 class Controller {
 
   /* @ngInject */
-  constructor ($scope, todoService, $http, logStorageService, $log) {
+  constructor ($scope, todoService, $http) {
     this._todoService = todoService
     $scope.$watch('vm._todoService.data', () => {
       this.todoList = this._todoService.data
-      $log.info(this.todoList)
     })
 
     this._todoService.findAll((data) => {
@@ -15,15 +14,11 @@ class Controller {
     })
 
     this._$http = $http
-    this._logStorageService = logStorageService
   }
 
   add () {
     this._todoService.add(this.newContent)
     this.newContent = ''
-    this._logStorageService.flush()
-    this._logStorageService.size().then(console.log)
-    this._logStorageService.isEmpty().then(console.log)
 
     // chrome.runtime.sendMessage({data: 'data'}, function (response) {
     //   console.log('got it')

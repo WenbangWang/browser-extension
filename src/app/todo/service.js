@@ -3,9 +3,10 @@
 // const browser = require('../../browser-api')
 
 class TodoService {
-  constructor (localStorageService) {
+  constructor (localStorageService, $log) {
     this.data = []
     this._localStorageService = localStorageService
+    this._$log = $log
   }
 
   findAll (callback) {
@@ -37,6 +38,7 @@ class TodoService {
       completed: false,
       createdAt: new Date()
     }
+    this._$log.info(todo)
     this.data.push(todo)
     this.sync()
   }

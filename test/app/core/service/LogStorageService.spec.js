@@ -1,6 +1,6 @@
 'use strict'
 
-describe.only('LogStorageService', function () {
+describe('LogStorageService', function () {
   const LogStorageService = require('../../../../src/app/core/service/LogStorageService')
   const LOG_STORAGE_CONFIG = {
     name: 'log',
@@ -289,15 +289,51 @@ describe.only('LogStorageService', function () {
         $scope.$apply()
       })
 
-      it('should add log to in-memory storage when adding log is failed and the current storage source is not in-memory storage', function (done) {
-        const storage = []
-        const log = {}
-        logStorageService.getStorageSource.returns($q.resolve(storage))
-        localStorageService.set.returns($q.reject(123))
+      describe('add log failed', function () {
+        beforeEach(function () {
+          localStorageService.set.returns($q.reject(123))
+        })
 
-        logStorageService.add(log)
+        it('should add log to in-memory storage when and the current storage source is not in-memory storage', function (done) {
+          const storage = []
+          const log = {}
+          logStorageService.getStorageSource.returns($q.resolve(storage))
+
+          logStorageService.add(log)
+            .then(() => {
+              expect(log).to.be.oneOf(logStorageService._storage)
+            })
+            .then(done, done)
+
+          $scope.$apply()
+        })
+
+        it('should return a promise which resolves with nothing when current storage is in-memory storage', function (done) {
+          const log = {}
+          logStorageService.getStorageSource.returns($q.resolve(logStorageService._storage))
+
+          logStorageService.add(log)
+            .then(() => {
+              expect(log).to.be.oneOf(logStorageService._storage)
+            })
+            .then(done, done)
+
+          $scope.$apply()
+        })
+      })
+    })
+
+    describe('is flushing', function () {
+      beforeEach(function () {
+        logStorageService._isFlushing = true
+      })
+
+      it('should return a promise which resolves with nothing and not calling localStorageService.set', function (done) {
+        logStorageService.getStorageSource.returns($q.resolve([]))
+
+        logStorageService.add()
           .then(() => {
-            expect(log).to.be.oneOf(logStorageService._storage)
+            sinon.assert.notCalled(localStorageService.set)
           })
           .then(done, done)
 
