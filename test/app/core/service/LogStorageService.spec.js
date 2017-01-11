@@ -64,7 +64,7 @@ describe('LogStorageService', function () {
 
         logStorageService.getStorageSource()
 
-        sinon.assert.called(localStorageService.get)
+        localStorageService.get.should.have.been.called
       })
 
       it('should return a promise which resolves by the in-memory storage when localStorageService.get is rejected', function (done) {
@@ -105,7 +105,7 @@ describe('LogStorageService', function () {
 
           logStorageService.getStorageSource()
             .then(() => {
-              sinon.assert.calledWithExactly(localStorageService.set, storage)
+              localStorageService.set.should.have.been.calledWithExactly(storage)
             })
             .then(done, done)
 
@@ -151,7 +151,7 @@ describe('LogStorageService', function () {
 
       logStorageService.size()
 
-      sinon.assert.called(logStorageService.getStorageSource)
+      logStorageService.getStorageSource.should.have.been.called
     })
 
     it('should return a promise which resolves by the length of storage', function (done) {
@@ -190,7 +190,7 @@ describe('LogStorageService', function () {
 
       logStorageService.isEmpty()
 
-      sinon.assert.called(logStorageService.size)
+      logStorageService.size.should.have.been.called
     })
 
     it('should return a promise which resolves by true if the size is 0', function (done) {
@@ -240,7 +240,7 @@ describe('LogStorageService', function () {
 
       logStorageService.add({})
 
-      sinon.assert.called(logStorageService.getStorageSource)
+      logStorageService.getStorageSource.should.have.been.called
     })
 
     it('should add log to storage source', function (done) {
@@ -269,7 +269,7 @@ describe('LogStorageService', function () {
 
         logStorageService.add(log)
           .then(() => {
-            sinon.assert.calledWithExactly(localStorageService.set, storage)
+            localStorageService.set.should.have.been.calledWithExactly(storage)
           })
           .then(done, done)
 
@@ -333,7 +333,7 @@ describe('LogStorageService', function () {
 
         logStorageService.add()
           .then(() => {
-            sinon.assert.notCalled(localStorageService.set)
+            localStorageService.set.should.not.have.been.called
           })
           .then(done, done)
 
@@ -357,7 +357,7 @@ describe('LogStorageService', function () {
 
       logStorageService.clear()
 
-      sinon.assert.calledWithExactly(localStorageService.set, storage)
+      localStorageService.set.should.have.been.calledWithExactly(storage)
     })
   })
 
@@ -373,7 +373,7 @@ describe('LogStorageService', function () {
         logStorageService.flush()
           .then(() => {
             expect(true).to.be.true
-            sinon.assert.notCalled(logStorageService.getStorageSource)
+            logStorageService.getStorageSource.should.not.have.been.called
           })
           .then(done, done)
 
@@ -398,7 +398,7 @@ describe('LogStorageService', function () {
       it('should get the storage source', function () {
         logStorageService.flush()
 
-        sinon.assert.called(logStorageService.getStorageSource)
+        logStorageService.getStorageSource.should.have.been.called
       })
 
       it('should post storage source', function (done) {
@@ -408,7 +408,7 @@ describe('LogStorageService', function () {
 
         logStorageService.flush()
           .then(() => {
-            sinon.assert.calledWithExactly($http.post, `${BASE_URL}/log`, source)
+            $http.post.should.have.been.calledWithExactly(`${BASE_URL}/log`, source)
           })
           .then(done, done)
 
@@ -421,8 +421,8 @@ describe('LogStorageService', function () {
 
         logStorageService.flush()
           .catch(() => {
-            sinon.assert.callCount(logStorageService.getStorageSource, LOG_STORAGE_CONFIG.retry)
-            sinon.assert.callCount($http.post, LOG_STORAGE_CONFIG.retry)
+            logStorageService.getStorageSource.should.have.callCount(LOG_STORAGE_CONFIG.retry)
+            $http.post.should.have.callCount(LOG_STORAGE_CONFIG.retry)
           })
           .then(done, done)
 
@@ -438,8 +438,8 @@ describe('LogStorageService', function () {
 
         logStorageService.flush()
           .then(() => {
-            sinon.assert.callCount(logStorageService.getStorageSource, LOG_STORAGE_CONFIG.retry)
-            sinon.assert.callCount($http.post, LOG_STORAGE_CONFIG.retry)
+            logStorageService.getStorageSource.should.have.callCount(LOG_STORAGE_CONFIG.retry)
+            $http.post.should.have.callCount(LOG_STORAGE_CONFIG.retry)
           })
           .then(done, done)
 
@@ -454,8 +454,8 @@ describe('LogStorageService', function () {
 
         logStorageService.flush()
           .catch(() => {
-            sinon.assert.calledOnce(logStorageService.getStorageSource)
-            sinon.assert.calledOnce($http.post)
+            logStorageService.getStorageSource.should.have.been.calledOnce
+            $http.post.should.have.been.calledOnce
           })
           .then(done, done)
 
@@ -485,7 +485,7 @@ describe('LogStorageService', function () {
 
           logStorageService.flush()
             .then(() => {
-              sinon.assert.calledWithExactly(localStorageService.set, storage)
+              localStorageService.set.should.have.been.calledWithExactly(storage)
             })
             .then(done, done)
 

@@ -68,7 +68,7 @@ describe('log config', function () {
       methods.forEach(method => $delegate[method].call(null, arg1, arg2))
 
       return Promise.all(promises)
-        .then(() => methods.forEach(method => sinon.assert.calledWithExactly($delegateStubs[method], arg1, arg2)))
+        .then(() => methods.forEach(method => $delegateStubs[method].should.have.been.calledWithExactly(arg1, arg2)))
     })
 
     it('should inject logStorageService from $injector', function () {
@@ -76,8 +76,8 @@ describe('log config', function () {
 
       return Promise.all(promises)
         .then(() => {
-          sinon.assert.calledWithExactly($injector.get, 'logStorageService')
-          sinon.assert.callCount($injector.get, methods.length)
+          $injector.get.should.have.been.calledWithExactly('logStorageService')
+          $injector.get.should.have.callCount(methods.length)
         })
     })
 
@@ -85,7 +85,7 @@ describe('log config', function () {
       methods.forEach(method => $delegate[method]())
 
       return Promise.all(promises)
-        .then(() => sinon.assert.callCount(Stacktrace.get, methods.length))
+        .then(() => Stacktrace.get.should.have.callCount(methods.length))
     })
 
     it('should add log body to log storage service with properties', function () {
@@ -120,7 +120,7 @@ describe('log config', function () {
 
       $delegate.error(error)
 
-      return promise.then(() => sinon.assert.calledWithExactly(Stacktrace.fromError, error))
+      return promise.then(() => Stacktrace.fromError.should.have.been.calledWithExactly(error))
     })
   })
 
@@ -140,7 +140,7 @@ describe('log config', function () {
     it('should decorate $log with logDecorator', function () {
       logConfig($provide)
 
-      sinon.assert.calledWithExactly($provide.decorator, '$log', logConfig.logDecorator)
+      $provide.decorator.should.have.been.calledWithExactly('$log', logConfig.logDecorator)
     })
   })
 })
