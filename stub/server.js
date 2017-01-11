@@ -11,4 +11,8 @@ console.log(`Stub Server starts at ${port}`)
 app.use(morgan('dev'))
 
 app.use('/', express.static(path.join(process.cwd(), 'stub')))
+app.post('/log', (request, response) => {
+  console.log(request.body)
+  response.send()
+})
 app.listen(port)

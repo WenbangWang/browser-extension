@@ -10,12 +10,22 @@ class StorageArea {
     return callback || callback()
   }
 
-  get (key, callback) {
-    if (callback) {
-      return callback(this._data[key])
+  get (keys, callback) {
+    const data = {}
+
+    if (keys instanceof Array) {
+      keys.forEach(key => {
+        data[key] = this._data[key]
+      })
+    } else if (keys instanceof String) {
+      data[keys] = this._data[keys]
     }
 
-    return this._data[key]
+    if (callback) {
+      return callback(data)
+    }
+
+    return data
   }
 }
 
