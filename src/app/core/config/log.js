@@ -38,12 +38,12 @@ function logDecorator ($delegate, $injector) {
   return $delegate
 }
 
-function buildLogBody (type, message, stackTrace) {
+function buildLogBody (type, message, stacktrace) {
   return {
     timestamp: Date.now(),
     type,
     message,
-    stackTrace
+    stacktrace
   }
 }
 
