@@ -15,6 +15,9 @@ module.exports = function (config) {
     client: {
       mocha: {
         timeout: 60000 // 10 seconds - upped from 2 seconds
+      },
+      chai: {
+        includeStack: true
       }
     },
 
@@ -22,6 +25,8 @@ module.exports = function (config) {
     files: [
       './node_modules/angular/angular.js',
       './node_modules/angular-mocks/angular-mocks.js',
+      './node_modules/bluebird/js/browser/bluebird.js',
+      './node_modules/angular-bluebird-promises/dist/angular-bluebird-promises.js',
       {
         pattern: './test/test.main.js',
         watched: false,
@@ -109,7 +114,7 @@ module.exports = function (config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     // If don't want to open a new browser, change this to "PhantomJS"
     // If want a better stack trace, change this to "Chrome"
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
 
     // if true, Karma runs tests once and exits
     singleRun: true

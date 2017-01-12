@@ -7,6 +7,7 @@ const browser = require('../browser')
 const LogStorageService = require('./service/LogStorageService')
 const i18nConfig = require('./config/i18n')
 const logConfig = require('./config/log')
+const run = require('./run-block')
 
 module.exports =
   angular
@@ -14,4 +15,5 @@ module.exports =
     .service('logStorageService', LogStorageService)
     .config(i18nConfig)
     .config(logConfig)
+    .run(run)
     .name

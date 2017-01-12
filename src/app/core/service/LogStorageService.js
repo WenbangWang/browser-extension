@@ -109,12 +109,12 @@ class LogStorageService {
             that._$http.post(`${that._BASE_URL}/log`, source)
               .then(deferred.resolve)
               // Retry posting when it failed.
-              .catch(() => {
+              .catch(err => {
                 if (++count < that._CONFIG.retry && sizeOf(source) <= that._CONFIG.threshold) {
                   return postLog()
                 }
 
-                return deferred.reject()
+                return deferred.reject(new Error(err))
               })
 
             return deferred.promise

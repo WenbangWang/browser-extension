@@ -2,6 +2,7 @@
 
 describe('LogStorageService', function () {
   const LogStorageService = require('../../../../src/app/core/service/LogStorageService')
+  const $qBluebirdPolyfill = require('../../../helper/$q-bluebird-polyfill')
   const LOG_STORAGE_CONFIG = {
     name: 'log',
     batchSize: 64,
@@ -16,13 +17,10 @@ describe('LogStorageService', function () {
 
   let $q
   let $http
-  let $scope
   let logStorageService
 
   beforeEach(inject($injector => {
-    $q = $injector.get('$q')
     $http = $injector.get('$http')
-    $scope = $injector.get('$rootScope').$new()
   }))
 
   beforeEach(function () {
@@ -32,6 +30,7 @@ describe('LogStorageService', function () {
   })
 
   beforeEach(function () {
+    $q = $qBluebirdPolyfill()
     logStorageService = new LogStorageService(localStorageService, $q, $http)
   })
 
@@ -47,36 +46,38 @@ describe('LogStorageService', function () {
         logStorageService._isFlushing = true
       })
 
-      it('should return a promise which resolves by the in-memory storage', function (done) {
-        logStorageService.getStorageSource()
-          .then(source => {
-            expect(source).to.equal(logStorageService._storage)
-          })
-          .then(done, done)
-
-        $scope.$apply()
+      it('should return a promise which resolves by the in-memory storage', function () {
+        // return $q.when()
+        // logStorageService.getStorageSource()
+        //   .then(done)
+        // .then(source => {
+        //   console.log(source)
+        //   done()
+        // })
+        return logStorageService.getStorageSource()
+          .then(source => expect(source).to.equal(logStorageService._storage))
+        //   .then(done, done)
+        //
+        // $scope.$apply()
       })
     })
 
-    describe('is not flushing', function (done) {
+    describe('is not flushing', function () {
       it('should get storage from localStorageService', function () {
-        localStorageService.get.returns($q.resolve())
+        const promise = $q.resolve()
+        localStorageService.get.returns(promise)
 
         logStorageService.getStorageSource()
 
-        localStorageService.get.should.have.been.called
+        return promise
+          .then(() => localStorageService.get.should.have.been.called)
       })
 
-      it('should return a promise which resolves by the in-memory storage when localStorageService.get is rejected', function (done) {
-        localStorageService.get.returns($q.reject(123))
+      it('should return a promise which resolves by the in-memory storage when localStorageService.get is rejected', function () {
+        localStorageService.get.returns($q.reject(new Error()))
 
-        logStorageService.getStorageSource()
-          .then(source => {
-            expect(source).to.equal(logStorageService._storage)
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.getStorageSource()
+          .then(source => expect(source).to.equal(logStorageService._storage))
       })
 
       it('should return a promise which resolves by the storage source if the source exists in local storage', function () {
@@ -84,13 +85,8 @@ describe('LogStorageService', function () {
         storage[LOG_STORAGE_CONFIG.name] = []
         localStorageService.get.returns($q.resolve(storage))
 
-        logStorageService.getStorageSource()
-          .then(source => {
-            expect(source).to.equal(storage[LOG_STORAGE_CONFIG.name])
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.getStorageSource()
+          .then(source => expect(source).to.equal(storage[LOG_STORAGE_CONFIG.name]))
       })
 
       describe('source does not exist', function () {
@@ -103,13 +99,8 @@ describe('LogStorageService', function () {
           storage[LOG_STORAGE_CONFIG.name] = []
           localStorageService.set.returns($q.resolve())
 
-          logStorageService.getStorageSource()
-            .then(() => {
-              localStorageService.set.should.have.been.calledWithExactly(storage)
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.getStorageSource()
+            .then(() => localStorageService.set.should.have.been.calledWithExactly(storage))
         })
 
         it('should return a promise which resolves by the new created storage', function () {
@@ -117,25 +108,15 @@ describe('LogStorageService', function () {
           storage[LOG_STORAGE_CONFIG.name] = []
           localStorageService.set.returns($q.resolve())
 
-          logStorageService.getStorageSource()
-            .then(source => {
-              expect(source).to.eql(storage[LOG_STORAGE_CONFIG.name])
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.getStorageSource()
+            .then(source => expect(source).to.eql(storage[LOG_STORAGE_CONFIG.name]))
         })
 
         it('should return a promise which resolves by the in-memory storage when creation is failed', function () {
-          localStorageService.set.returns($q.reject(123))
+          localStorageService.set.returns($q.reject(new Error()))
 
-          logStorageService.getStorageSource()
-            .then(source => {
-              expect(source).to.equal(logStorageService._storage)
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.getStorageSource()
+            .then(source => expect(source).to.equal(logStorageService._storage))
         })
       })
     })
@@ -147,36 +128,27 @@ describe('LogStorageService', function () {
     })
 
     it('should call getStorageSource', function () {
-      logStorageService.getStorageSource.returns($q.resolve())
+      const promise = $q.resolve()
+      logStorageService.getStorageSource.returns(promise)
 
       logStorageService.size()
 
-      logStorageService.getStorageSource.should.have.been.called
+      return promise.then(() => logStorageService.getStorageSource.should.have.been.called)
     })
 
-    it('should return a promise which resolves by the length of storage', function (done) {
+    it('should return a promise which resolves by the length of storage', function () {
       const storage = [1, 2, 3]
       logStorageService.getStorageSource.returns($q.resolve(storage))
 
-      logStorageService.size()
-        .then(size => {
-          expect(size).to.equal(storage.length)
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return logStorageService.size()
+        .then(size => expect(size).to.equal(storage.length))
     })
 
-    it('should return a promise which resolves by 0 if storage does not have length', function (done) {
+    it('should return a promise which resolves by 0 if storage does not have length', function () {
       logStorageService.getStorageSource.returns($q.resolve())
 
-      logStorageService.size()
-        .then(size => {
-          expect(size).to.equal(0)
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return logStorageService.size()
+        .then(size => expect(size).to.equal(0))
     })
   })
 
@@ -186,35 +158,26 @@ describe('LogStorageService', function () {
     })
 
     it('should call size', function () {
-      logStorageService.size.returns($q.resolve())
+      const promise = $q.resolve()
+      logStorageService.size.returns(promise)
 
       logStorageService.isEmpty()
 
-      logStorageService.size.should.have.been.called
+      return promise.then(() => logStorageService.size.should.have.been.called)
     })
 
-    it('should return a promise which resolves by true if the size is 0', function (done) {
+    it('should return a promise which resolves by true if the size is 0', function () {
       logStorageService.size.returns($q.resolve(0))
 
-      logStorageService.isEmpty()
-        .then(isEmpty => {
-          expect(isEmpty).to.be.true
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return logStorageService.isEmpty()
+        .then(isEmpty => expect(isEmpty).to.be.true)
     })
 
-    it('should return a promise which resolves by false if the size is not 0', function (done) {
+    it('should return a promise which resolves by false if the size is not 0', function () {
       logStorageService.size.returns($q.resolve(1))
 
-      logStorageService.isEmpty()
-        .then(isEmpty => {
-          expect(isEmpty).to.be.false
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return logStorageService.isEmpty()
+        .then(isEmpty => expect(isEmpty).to.be.false)
     })
   })
 
@@ -236,30 +199,26 @@ describe('LogStorageService', function () {
     })
 
     it('should call getStorageSource', function () {
-      logStorageService.getStorageSource.returns($q.resolve())
+      const promise = $q.resolve()
+      logStorageService.getStorageSource.returns(promise)
 
       logStorageService.add({})
 
-      logStorageService.getStorageSource.should.have.been.called
+      promise.then(() => logStorageService.getStorageSource.should.have.been.called)
     })
 
-    it('should add log to storage source', function (done) {
+    it('should add log to storage source', function () {
       const source = []
       const log = {}
       logStorageService.getStorageSource.returns($q.resolve(source))
       localStorageService.set.returns($q.resolve())
 
       logStorageService.add(log)
-        .then(() => {
-          expect(log).to.be.oneOf(source)
-        })
-        .then(done, done)
-
-      $scope.$apply()
+        .then(() => expect(log).to.be.oneOf(source))
     })
 
     describe('is not flushing', function () {
-      it('should add log to the storage', function (done) {
+      it('should add log to the storage', function () {
         const storage = {}
         const source = []
         const log = {}
@@ -268,57 +227,37 @@ describe('LogStorageService', function () {
         localStorageService.set.returns($q.resolve())
 
         logStorageService.add(log)
-          .then(() => {
-            localStorageService.set.should.have.been.calledWithExactly(storage)
-          })
-          .then(done, done)
-
-        $scope.$apply()
+          .then(() => localStorageService.set.should.have.been.calledWithExactly(storage))
       })
 
-      it('should return a promise which resolves when adding log is succeeded', function (done) {
+      it('should return a promise which resolves when adding log is succeeded', function () {
         logStorageService.getStorageSource.returns($q.resolve([]))
         localStorageService.set.returns($q.resolve())
 
-        logStorageService.add({})
-          .then(() => {
-            expect(true).to.be.true
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.add({})
+          .then(() => expect(true).to.be.true)
       })
 
       describe('add log failed', function () {
         beforeEach(function () {
-          localStorageService.set.returns($q.reject(123))
+          localStorageService.set.returns($q.reject(new Error()))
         })
 
-        it('should add log to in-memory storage when and the current storage source is not in-memory storage', function (done) {
+        it('should add log to in-memory storage when and the current storage source is not in-memory storage', function () {
           const storage = []
           const log = {}
           logStorageService.getStorageSource.returns($q.resolve(storage))
 
-          logStorageService.add(log)
-            .then(() => {
-              expect(log).to.be.oneOf(logStorageService._storage)
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.add(log)
+            .then(() => expect(log).to.be.oneOf(logStorageService._storage))
         })
 
-        it('should return a promise which resolves with nothing when current storage is in-memory storage', function (done) {
+        it('should return a promise which resolves with nothing when current storage is in-memory storage', function () {
           const log = {}
           logStorageService.getStorageSource.returns($q.resolve(logStorageService._storage))
 
-          logStorageService.add(log)
-            .then(() => {
-              expect(log).to.be.oneOf(logStorageService._storage)
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.add(log)
+            .then(() => expect(log).to.be.oneOf(logStorageService._storage))
         })
       })
     })
@@ -328,36 +267,32 @@ describe('LogStorageService', function () {
         logStorageService._isFlushing = true
       })
 
-      it('should return a promise which resolves with nothing and not calling localStorageService.set', function (done) {
+      it('should return a promise which resolves with nothing and not calling localStorageService.set', function () {
         logStorageService.getStorageSource.returns($q.resolve([]))
 
-        logStorageService.add()
-          .then(() => {
-            localStorageService.set.should.not.have.been.called
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.add()
+          .then(() => localStorageService.set.should.not.have.been.called)
       })
     })
   })
 
   describe('clear', function () {
     it('should clear the in-memory storage', function () {
+      localStorageService.set.returns($q.resolve())
+
       logStorageService._storage.push(123)
 
-      logStorageService.clear()
-
-      expect(logStorageService._storage).to.be.empty
+      return logStorageService.clear()
+        .then(() => expect(logStorageService._storage).to.be.empty)
     })
 
     it('should clear the local storage', function () {
       const storage = {}
+      localStorageService.set.returns($q.resolve())
       storage[LOG_STORAGE_CONFIG.name] = []
 
-      logStorageService.clear()
-
-      localStorageService.set.should.have.been.calledWithExactly(storage)
+      return logStorageService.clear()
+        .then(() => localStorageService.set.should.have.been.calledWithExactly(storage))
     })
   })
 
@@ -367,17 +302,14 @@ describe('LogStorageService', function () {
     })
 
     describe('is flushing', function () {
-      it('should do nothing when the storage is flushing', function (done) {
+      it('should do nothing when the storage is flushing', function () {
         logStorageService._isFlushing = true
 
-        logStorageService.flush()
+        return logStorageService.flush()
           .then(() => {
             expect(true).to.be.true
             logStorageService.getStorageSource.should.not.have.been.called
           })
-          .then(done, done)
-
-        $scope.$apply()
       })
     })
 
@@ -401,65 +333,52 @@ describe('LogStorageService', function () {
         logStorageService.getStorageSource.should.have.been.called
       })
 
-      it('should post storage source', function (done) {
+      it('should post storage source', function () {
         const source = []
         deferred.resolve(source)
         $http.post.returns($q.resolve())
 
-        logStorageService.flush()
-          .then(() => {
-            $http.post.should.have.been.calledWithExactly(`${BASE_URL}/log`, source)
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.flush()
+          .then(() => $http.post.should.have.been.calledWithExactly(`${BASE_URL}/log`, source))
       })
 
-      it(`should try to post storage source ${LOG_STORAGE_CONFIG.retry} times until it rejects the promise`, function (done) {
+      it(`should try to post storage source ${LOG_STORAGE_CONFIG.retry} times until it rejects the promise`, function () {
         deferred.resolve([])
-        $http.post.returns($q.reject(123))
+        $http.post.returns($q.reject(new Error()))
 
-        logStorageService.flush()
-          .catch(() => {
+        return logStorageService.flush()
+          .catch(error => {
+            expect(error).to.be.an.instanceof(Error)
             logStorageService.getStorageSource.should.have.callCount(LOG_STORAGE_CONFIG.retry)
             $http.post.should.have.callCount(LOG_STORAGE_CONFIG.retry)
           })
-          .then(done, done)
-
-        $scope.$apply()
       })
 
-      it(`should return a promise which resolves after post storage source fails less than ${LOG_STORAGE_CONFIG.retry} times`, function (done) {
+      it(`should return a promise which resolves after post storage source fails less than ${LOG_STORAGE_CONFIG.retry} times`, function () {
         deferred.resolve([])
         for (let i = 0; i < LOG_STORAGE_CONFIG.retry - 1; i++) {
-          $http.post.onCall(i).returns($q.reject(123))
+          $http.post.onCall(i).returns($q.reject(new Error()))
         }
         $http.post.onCall(LOG_STORAGE_CONFIG.retry - 1).returns($q.resolve())
 
-        logStorageService.flush()
+        return logStorageService.flush()
           .then(() => {
             logStorageService.getStorageSource.should.have.callCount(LOG_STORAGE_CONFIG.retry)
             $http.post.should.have.callCount(LOG_STORAGE_CONFIG.retry)
           })
-          .then(done, done)
-
-        $scope.$apply()
       })
 
-      it(`should reject the promise returned when post storage source fails less than ${LOG_STORAGE_CONFIG.retry} times but the size of the source exceeds ${LOG_STORAGE_CONFIG.threshold}`, function (done) {
+      it(`should reject the promise returned when post storage source fails less than ${LOG_STORAGE_CONFIG.retry} times but the size of the source exceeds ${LOG_STORAGE_CONFIG.threshold}`, function () {
         const largeStorageSource = []
         largeStorageSource.length = LOG_STORAGE_CONFIG.threshold + 1
-        $http.post.onFirstCall().returns($q.reject(123))
+        $http.post.onFirstCall().returns($q.reject(new Error()))
         deferred.resolve(largeStorageSource)
 
-        logStorageService.flush()
+        return logStorageService.flush()
           .catch(() => {
             logStorageService.getStorageSource.should.have.been.calledOnce
             $http.post.should.have.been.calledOnce
           })
-          .then(done, done)
-
-        $scope.$apply()
       })
 
       describe('log posting success', function () {
@@ -468,69 +387,44 @@ describe('LogStorageService', function () {
           $http.post.returns($q.resolve())
         })
 
-        it('should stop flushing', function (done) {
-          logStorageService.flush()
-            .then(() => {
-              expect(logStorageService.isFlushing()).to.be.false
-            })
-            .then(done, done)
-
-          $scope.$apply()
+        it('should stop flushing', function () {
+          return logStorageService.flush()
+            .then(() => expect(logStorageService.isFlushing()).to.be.false)
         })
 
-        it('should replace the local storage with the in-memory storage', function (done) {
+        it('should replace the local storage with the in-memory storage', function () {
           const storage = {}
           logStorageService._storage = [1, 2, 3]
           storage[LOG_STORAGE_CONFIG.name] = logStorageService._storage
 
-          logStorageService.flush()
-            .then(() => {
-              localStorageService.set.should.have.been.calledWithExactly(storage)
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.flush()
+            .then(() => localStorageService.set.should.have.been.calledWithExactly(storage))
         })
 
-        it('should clear the in-memory storage when localStorageService.set is resolved', function (done) {
+        it('should clear the in-memory storage when localStorageService.set is resolved', function () {
           logStorageService._storage = [1, 2, 3]
           localStorageService.set.returns($q.resolve())
 
-          logStorageService.flush()
-            .then(() => {
-              expect(logStorageService._storage).to.be.empty
-            })
-            .then(done, done)
-
-          $scope.$apply()
+          return logStorageService.flush()
+            .then(() => expect(logStorageService._storage).to.be.empty)
         })
       })
 
-      it('should stop flushing when post log is failed', function (done) {
+      it('should stop flushing when post log is failed', function () {
         deferred.resolve([])
-        $http.post.returns($q.reject(123))
+        $http.post.returns($q.reject(new Error()))
 
-        logStorageService.flush()
-          .catch(() => {
-            expect(logStorageService.isFlushing()).to.be.false
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.flush()
+          .catch(() => expect(logStorageService.isFlushing()).to.be.false)
       })
 
-      it('should stop flushing when localStorageService.set is failed', function (done) {
+      it('should stop flushing when localStorageService.set is failed', function () {
         deferred.resolve([])
         $http.post.returns($q.resolve())
-        localStorageService.set.returns($q.reject(123))
+        localStorageService.set.returns($q.reject(new Error()))
 
-        logStorageService.flush()
-          .catch(() => {
-            expect(logStorageService.isFlushing()).to.be.false
-          })
-          .then(done, done)
-
-        $scope.$apply()
+        return logStorageService.flush()
+          .catch(() => expect(logStorageService.isFlushing()).to.be.false)
       })
     })
   })
