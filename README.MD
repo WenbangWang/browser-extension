@@ -54,11 +54,17 @@ Browser extension api provides both `sync` version as well as `async` version fo
 
 ## Unit Test
 
-All test files should follow the naming pattern `*.spec.js`. Otherwise, it will not be loaded into testing environment.
+All test files should follow the naming pattern `*.spec.js`. For test files should be executed in browser, it should be named as `*.browser.spec.js`. Otherwise, it will not be loaded into testing environment.
 
-Run `grunt test` to test all the source files and `grunt test:coverage` to test with coverage reports generated and check coverage. It uses `karma` as the test runner, `mocha` as the test framework, `sinon` as the spy/stub lib, `chai` as the assertion lib and `istanbul` to generate and check test coverage under the hood.
+Run `grunt test` to test all the source files and `grunt test:coverage` to test with coverage reports generated and check coverage. 
 
-The reason behind using `karma` is the app should live within a browser environment and `karma` is a good test runner to run the app within headless browser such as `PhantomJS` or normal browsers such as `Chrome` and it will take a lot of efforts to mock dependencies which already exist in a browser environment if we want to test the app in a `node` environment. A little problem when using `PhantomJS` is that it does not fully support ES6 syntax (See [here](https://github.com/ariya/phantomjs/issues/14506#issuecomment-251611067)) and `webpack` with `babel` loader comes in place to solve this problem.
+All tests are written by `mocha` with `chai` as assertion library, `sinon` as spy and stub library together with some other plugins like `sinon-chai`. 
+
+Most of the tests are running in `node` environment. So you can also run `mocha` directly to test individual file like `./node_modules/.bin/mocha ${file path}`. 
+
+For other tests which should be running in `browser` environment, `karma` is used as the test runner. `karma` is a good test runner to run tests within headless browser such as `PhantomJS` or normal browsers such as `Chrome`. 
+
+When to write tests running in `browser`: it take a lot of efforts to mock dependencies if we want to test the app in a `node` environment which can be easily used in a browser environment or some integration tests. A little problem when using `PhantomJS` is that it does not fully support ES6 syntax (See [here](https://github.com/ariya/phantomjs/issues/14506#issuecomment-251611067)) and `webpack` with `babel` loader comes in place to solve this problem.
 
 Note that if you want to import an `angular` module into test context by using shortcut `module({module name})` from `angular.mock`, an `Object is not a constructor` exception will be thrown because `webpack` is overriding `module`. So instead of using `module` as a shortcut, just use `angular.mock.module({module name})` explicitly.
  

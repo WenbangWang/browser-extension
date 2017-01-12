@@ -1,6 +1,6 @@
 'use strict'
 
-describe('log config', function () {
+describe('log config', () => {
   const logConfig = require('../../../../src/app/core/config/log')
   const Stacktrace = require('stacktrace-js')
   const Promise = require('bluebird')
@@ -16,7 +16,7 @@ describe('log config', function () {
   let $delegate
   let $delegateStubs
 
-  beforeEach(function () {
+  beforeEach(() => {
     $delegateStubs = {}
 
     $delegate = methods.reduce((map, method) => {
@@ -25,7 +25,7 @@ describe('log config', function () {
     }, {})
   })
 
-  beforeEach(function () {
+  beforeEach(() => {
     methods.forEach(method => ($delegateStubs[method] = sinon.stub($delegate, method)))
 
     sinon.stub($injector, 'get').returns(logStorageService)
@@ -36,7 +36,7 @@ describe('log config', function () {
     sinon.stub(logStorageService, 'add')
   })
 
-  afterEach(function () {
+  afterEach(() => {
     methods.forEach(method => $delegateStubs[method].restore())
 
     $injector.get.restore()
@@ -47,10 +47,10 @@ describe('log config', function () {
     logStorageService.add.restore()
   })
 
-  describe('decorator', function () {
+  describe('decorator', () => {
     let promises
 
-    beforeEach(function () {
+    beforeEach(() => {
       promises = []
       methods.forEach((method, index) => {
         const promise = Promise.resolve()
@@ -61,7 +61,7 @@ describe('log config', function () {
       logConfig.logDecorator($delegate, $injector)
     })
 
-    it('should call the original method from $delegate', function () {
+    it('should call the original method from $delegate', () => {
       const arg1 = 'arg1'
       const arg2 = 'arg2'
 
@@ -71,7 +71,7 @@ describe('log config', function () {
         .then(() => methods.forEach(method => $delegateStubs[method].should.have.been.calledWithExactly(arg1, arg2)))
     })
 
-    it('should inject logStorageService from $injector', function () {
+    it('should inject logStorageService from $injector', () => {
       methods.forEach(method => $delegate[method]())
 
       return Promise.all(promises)
@@ -81,14 +81,14 @@ describe('log config', function () {
         })
     })
 
-    it('should get stack trace', function () {
+    it('should get stack trace', () => {
       methods.forEach(method => $delegate[method]())
 
       return Promise.all(promises)
         .then(() => Stacktrace.get.should.have.callCount(methods.length))
     })
 
-    it('should add log body to log storage service with properties', function () {
+    it('should add log body to log storage service with properties', () => {
       const arg1 = 'arg1'
       const arg2 = 'arg2'
       const stacktrace = 'stacktrace'
@@ -112,7 +112,7 @@ describe('log config', function () {
       })
     })
 
-    it('should get error stack when the first argument is an instance of Error', function () {
+    it('should get error stack when the first argument is an instance of Error', () => {
       const stacktrace = 'stacktrace'
       const promise = Promise.resolve(stacktrace)
       const error = new Error()
@@ -124,20 +124,20 @@ describe('log config', function () {
     })
   })
 
-  describe('config', function () {
+  describe('config', () => {
     const $provide = {
       decorator: () => {}
     }
 
-    beforeEach(function () {
+    beforeEach(() => {
       sinon.stub($provide, 'decorator')
     })
 
-    afterEach(function () {
+    afterEach(() => {
       $provide.decorator.restore()
     })
 
-    it('should decorate $log with logDecorator', function () {
+    it('should decorate $log with logDecorator', () => {
       logConfig($provide)
 
       $provide.decorator.should.have.been.calledWithExactly('$log', logConfig.logDecorator)

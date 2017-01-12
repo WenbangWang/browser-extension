@@ -20,7 +20,7 @@ class StorageArea {
       keys.forEach(key => {
         data[key] = this._data[key]
       })
-    } else if (keys instanceof String) {
+    } else if (typeof keys === 'string') {
       data[keys] = this._data[keys]
     }
 

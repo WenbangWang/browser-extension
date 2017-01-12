@@ -1,6 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird')
+const extend = require('lodash').extend
 
 // Copied from angular-bluebird-promises.
 // The reason behind this is to take advantage of auto-resolve/reject promise in mocha by just returning the promise.
@@ -12,9 +13,9 @@ module.exports = function polyfill () {
 
   $qBluebird.prototype = Promise.prototype
 
-  angular.extend($qBluebird, Promise)
+  extend($qBluebird, Promise)
 
-  $qBluebird.defer = function () {
+  $qBluebird.defer = () => {
     const deferred = {}
     deferred.promise = $qBluebird((resolve, reject) => {
       deferred.resolve = resolve

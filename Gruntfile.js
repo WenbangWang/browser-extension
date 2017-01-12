@@ -15,10 +15,11 @@ module.exports = grunt => {
       },
       test: {
         path: 'test',
-        filePattern: '<%= test.path %>/**/*.spec.js'
+        filePattern: '<%= test.path %>/**/!(*.browser).spec.js'
       },
       coverage: {
-        path: 'coverage'
+        path: 'coverage',
+        excludes: ['**/browser-api-mock/**/*.js']
       },
       stub: {
         path: 'stub',

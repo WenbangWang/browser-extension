@@ -25,8 +25,6 @@ module.exports = function (config) {
     files: [
       './node_modules/angular/angular.js',
       './node_modules/angular-mocks/angular-mocks.js',
-      './node_modules/bluebird/js/browser/bluebird.js',
-      './node_modules/angular-bluebird-promises/dist/angular-bluebird-promises.js',
       {
         pattern: './test/test.main.js',
         watched: false,

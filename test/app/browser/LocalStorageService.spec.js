@@ -1,87 +1,70 @@
 'use strict'
 
-describe('LocalStorageService', function () {
-  const LocalStorageService = require('../../../src/app/browser/LocalStorageService')
-  const browser = require('../../../src/browser-api')
+describe('LocalStorageService', () => {
+  const proxyquire = require('proxyquire').noCallThru()
+  const browser = require('../../../src/browser-api-mock')
+  const LocalStorageService = proxyquire('../../../src/app/browser/LocalStorageService', {
+    '../../browser-api': browser
+  })
+  const $qBluebirdPolyfill = require('../../helper/$q-bluebird-polyfill')
 
   let localStorageService
   let $q
-  let $scope
 
-  beforeEach(inject($injector => {
-    $q = $injector.get('$q')
-    $scope = $injector.get('$rootScope').$new()
-  }))
-
-  beforeEach(function () {
+  beforeEach(() => {
     sinon.stub(browser.storage.local, 'get')
     sinon.stub(browser.storage.local, 'set')
   })
 
-  beforeEach(function () {
+  beforeEach(() => {
+    $q = $qBluebirdPolyfill()
     localStorageService = new LocalStorageService($q)
   })
 
-  afterEach(function () {
+  afterEach(() => {
     browser.storage.local.get.restore()
     browser.storage.local.set.restore()
   })
 
-  describe('get', function () {
-    it('should return a promise which resolves to the callback parameter', function (done) {
+  describe('get', () => {
+    it('should return a promise which resolves to the callback parameter', () => {
       const value = 123
       browser.storage.local.get.callsArgWith(1, value)
 
-      localStorageService.get('test')
-        .then(val => {
-          expect(val).to.equal(value)
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return localStorageService.get('test')
+        .then(val => expect(val).to.equal(value))
     })
 
-    it('should reject the returned promise if runtime.lastError is not null', function (done) {
+    it('should reject the returned promise if runtime.lastError is not null', () => {
       browser.runtime.lastError = 'error'
       browser.storage.local.get.callsArg(1)
 
-      localStorageService.get('test')
+      return localStorageService.get('test')
         .catch(error => {
           expect(error).to.equal(browser.runtime.lastError)
           delete browser.runtime.lastError
         })
-        .then(done, done)
-
-      $scope.$apply()
     })
   })
 
-  describe('set', function () {
-    it('should return a promise which resolves to the callback parameter', function (done) {
+  describe('set', () => {
+    it('should return a promise which resolves to the callback parameter', () => {
       const value = 123
       browser.storage.local.set.callsArgWith(1, value)
 
-      localStorageService.set('test')
-        .then(val => {
-          expect(val).to.equal(value)
-        })
-        .then(done, done)
-
-      $scope.$apply()
+      return localStorageService.set('test')
+        .then(val => expect(val).to.equal(value))
     })
 
-    it('should reject the returned promise if runtime.lastError is not null', function (done) {
-      browser.runtime.lastError = 'error'
+    it('should reject the returned promise if runtime.lastError is not null', () => {
+      browser.runtime.lastError = new Error()
       browser.storage.local.set.callsArg(1)
 
-      localStorageService.set('test')
+      return localStorageService.set('test')
         .catch(error => {
           expect(error).to.equal(browser.runtime.lastError)
           delete browser.runtime.lastError
         })
-        .then(done, done)
-
-      $scope.$apply()
     })
   })
 })

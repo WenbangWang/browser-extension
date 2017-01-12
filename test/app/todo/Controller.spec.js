@@ -2,8 +2,8 @@
 
 // const controller = require('../../../src/app/todo/Controller')
 
-describe('test', function () {
-  it('should test', function () {
+describe('test', () => {
+  it('should test', () => {
 
   })
 })

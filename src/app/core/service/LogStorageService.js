@@ -22,32 +22,36 @@ class LogStorageService {
 
   getStorageSource () {
     if (!this.isFlushing()) {
-      return this._localStorageService.get(this._CONFIG.name)
-        .then(data => data && data[this._CONFIG.name])
-        // Fallback to in-memory storage when failed.
-        .catch(() => this._storage)
-        .then(source => {
-          if (source instanceof Array) {
-            return this._$q.resolve(source)
-          }
-
-          const deferred = this._$q.defer()
-          const storage = {}
-          storage[this._CONFIG.name] = []
-          this._localStorageService.set(storage)
-            .then(() => {
-              deferred.resolve(storage[this._CONFIG.name])
-            })
-            // Fallback to in-memory storage when failed.
-            .catch(() => {
-              deferred.resolve(this._storage)
-            })
-
-          return deferred.promise
-        })
+      return this.getStorageSourceFromLocalStorage()
     }
 
     return this._$q.resolve(this._storage)
+  }
+
+  getStorageSourceFromLocalStorage () {
+    return this._localStorageService.get(this._CONFIG.name)
+      .then(data => data && data[this._CONFIG.name])
+      // Fallback to in-memory storage when failed.
+      .catch(() => this._storage)
+      .then(source => {
+        if (source instanceof Array) {
+          return this._$q.resolve(source)
+        }
+
+        const deferred = this._$q.defer()
+        const storage = {}
+        storage[this._CONFIG.name] = []
+        this._localStorageService.set(storage)
+          .then(() => {
+            deferred.resolve(storage[this._CONFIG.name])
+          })
+          // Fallback to in-memory storage when failed.
+          .catch(() => {
+            deferred.resolve(this._storage)
+          })
+
+        return deferred.promise
+      })
   }
 
   add (log) {
@@ -59,8 +63,9 @@ class LogStorageService {
           const storage = {}
           storage[this._CONFIG.name] = source
 
-          return this._localStorageService.set(storage)
-          // Fallback to in-memory storage when failed.
+          return this._localStorageService
+            .set(storage)
+            // Fallback to in-memory storage when failed.
             .catch(() => {
               // Only persist when the storage source is not in-memory storage.
               // Since the log already pushed when getStorageSource is resolves at first place.
@@ -104,7 +109,7 @@ class LogStorageService {
       const that = this
       let count = 0
       const postLog = function postLog () {
-        return that.getStorageSource()
+        return that.getStorageSourceFromLocalStorage()
           .then(source => {
             that._$http.post(`${that._BASE_URL}/log`, source)
               .then(deferred.resolve)
