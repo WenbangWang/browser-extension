@@ -8,7 +8,7 @@ const rootPath = path.resolve(__dirname, '..')
 const config = {
   entry: {
     app: ['./src/app/core/bootstrap.js'],
-    vendor: ['angular', 'angular-translate', 'bootstrap/dist/js/bootstrap', 'jquery', 'stacktrace-js']
+    vendor: ['angular', 'angular-translate', 'bootstrap/dist/js/bootstrap', 'jquery', 'error-stack-parser']
   },
   output: {
     filename: '[name].js'

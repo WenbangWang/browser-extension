@@ -2,7 +2,7 @@
 
 describe('log config', () => {
   const logConfig = require('../../../../src/app/core/config/log')
-  const Stacktrace = require('stacktrace-js')
+  const ErrorStackParser = require('error-stack-parser')
   const Promise = require('bluebird')
 
   const methods = ['log', 'info', 'warn', 'debug', 'error']
@@ -30,8 +30,7 @@ describe('log config', () => {
 
     sinon.stub($injector, 'get').returns(logStorageService)
 
-    sinon.stub(Stacktrace, 'get')
-    sinon.stub(Stacktrace, 'fromError').returns(Promise.resolve())
+    sinon.stub(ErrorStackParser, 'parse')
 
     sinon.stub(logStorageService, 'add')
   })
@@ -41,23 +40,13 @@ describe('log config', () => {
 
     $injector.get.restore()
 
-    Stacktrace.get.restore()
-    Stacktrace.fromError.restore()
+    ErrorStackParser.parse.restore()
 
     logStorageService.add.restore()
   })
 
   describe('decorator', () => {
-    let promises
-
     beforeEach(() => {
-      promises = []
-      methods.forEach((method, index) => {
-        const promise = Promise.resolve()
-        promises.push(promise)
-        Stacktrace.get.onCall(index).returns(promise)
-      })
-
       logConfig.logDecorator($delegate, $injector)
     })
 
@@ -67,37 +56,45 @@ describe('log config', () => {
 
       methods.forEach(method => $delegate[method].call(null, arg1, arg2))
 
-      return Promise.all(promises)
-        .then(() => methods.forEach(method => $delegateStubs[method].should.have.been.calledWithExactly(arg1, arg2)))
+      methods.forEach(method => $delegateStubs[method].should.have.been.calledWithExactly(arg1, arg2))
     })
 
     it('should inject logStorageService from $injector', () => {
       methods.forEach(method => $delegate[method]())
 
-      return Promise.all(promises)
-        .then(() => {
-          $injector.get.should.have.been.calledWithExactly('logStorageService')
-          $injector.get.should.have.callCount(methods.length)
-        })
+      $injector.get.should.have.been.calledWithExactly('logStorageService')
+      $injector.get.should.have.callCount(methods.length)
     })
 
-    it('should get stack trace', () => {
-      methods.forEach(method => $delegate[method]())
+    describe('first argument is an instance of Error', () => {
+      const stacktrace = 'stacktrace'
+      const error = new Error()
 
-      return Promise.all(promises)
-        .then(() => Stacktrace.get.should.have.callCount(methods.length))
+      beforeEach(() => {
+        ErrorStackParser.parse.returns(stacktrace)
+      })
+
+      it('should parse error stack', () => {
+        $delegate.error(error)
+
+        ErrorStackParser.parse.should.have.been.calledWithExactly(error)
+      })
+
+      it('should add log body to log storage service with properties', () => {
+        $delegate.error(error)
+
+        const arg = logStorageService.add.args[0][0]
+
+        expect(arg).to.have.property('type', 'error')
+        expect(arg).to.have.property('message', error.message)
+        expect(arg).to.have.property('stacktrace', stacktrace)
+      })
     })
 
     it('should add log body to log storage service with properties', () => {
       const arg1 = 'arg1'
       const arg2 = 'arg2'
-      const stacktrace = 'stacktrace'
       const promises = []
-      methods.forEach((method, index) => {
-        const promise = Promise.resolve(stacktrace)
-        promises.push(promise)
-        Stacktrace.get.onCall(index).returns(promise)
-      })
 
       methods.forEach(method => $delegate[method].call(null, arg1, arg2))
 
@@ -107,20 +104,36 @@ describe('log config', () => {
 
           expect(args).to.have.property('type', method)
           expect(args).to.have.property('message').that.is.an('array').that.eql([arg1, arg2])
-          expect(args).to.have.property('stacktrace', stacktrace)
         })
       })
     })
 
-    it('should get error stack when the first argument is an instance of Error', () => {
-      const stacktrace = 'stacktrace'
-      const promise = Promise.resolve(stacktrace)
-      const error = new Error()
-      Stacktrace.fromError.returns(promise)
+    describe('getInstance', () => {
+      const context = 'context'
 
-      $delegate.error(error)
+      let logger
 
-      return promise.then(() => Stacktrace.fromError.should.have.been.calledWithExactly(error))
+      beforeEach(() => {
+        logger = $delegate.getInstance(context)
+      })
+
+      it('should add extra field context to the log body', () => {
+        const arg1 = 'arg1'
+        const arg2 = 'arg2'
+        const promises = []
+
+        methods.forEach(method => logger[method].call(null, arg1, arg2))
+
+        return Promise.all(promises).then(() => {
+          methods.forEach((method, index) => {
+            const args = logStorageService.add.args[index][0]
+
+            expect(args).to.have.property('type', method)
+            expect(args).to.have.property('message').that.is.an('array').that.eql([arg1, arg2])
+            expect(args).to.have.property('context', context)
+          })
+        })
+      })
     })
   })
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const Stacktrace = require('stacktrace-js')
+const ErrorStackParser = require('error-stack-parser')
 
 /* @ngInject */
 function logConfig ($provide) {
@@ -15,35 +15,50 @@ function logDecorator ($delegate, $injector) {
     return map
   }, {})
 
-  methods.forEach(method => {
-    $delegate[method] = function () {
-      const message = [].slice.call(arguments)
-      originalReference[method].apply(null, arguments)
-      const logStorageService = $injector.get('logStorageService')
-      const potentialError = message[0]
-      let getStacktrace = Stacktrace.get()
+  Object.assign($delegate, getLoggers($injector, originalReference))
 
-      if (potentialError instanceof Error) {
-        getStacktrace = Stacktrace.fromError(potentialError)
-      }
-
-      getStacktrace.then(stacktrace => {
-        const logBody = buildLogBody(method, message, stacktrace)
-
-        logStorageService.add(logBody)
-      })
-    }
-  })
+  $delegate.getInstance = context => getLoggers($injector, originalReference, context)
 
   return $delegate
 }
 
-function buildLogBody (type, message, stacktrace) {
+function getLoggers ($injector, originalReference, context) {
+  const methods = ['log', 'info', 'warn', 'debug', 'error']
+  const loggers = {}
+
+  methods.reduce((map, method) => {
+    map[method] = function () {
+      const message = [].slice.call(arguments)
+      originalReference[method].apply(null, arguments)
+      const logStorageService = $injector.get('logStorageService')
+      const potentialError = message[0]
+      const logBody = buildLogBody(method)
+
+      context && (logBody.context = context)
+
+      if (potentialError instanceof Error) {
+        const stacktrace = ErrorStackParser.parse(potentialError)
+
+        logBody.message = potentialError.message
+        logBody.stacktrace = stacktrace
+
+        logStorageService.add(logBody)
+      } else {
+        logBody.message = message
+
+        logStorageService.add(logBody)
+      }
+    }
+    return map
+  }, loggers)
+
+  return loggers
+}
+
+function buildLogBody (type) {
   return {
     timestamp: Date.now(),
-    type,
-    message,
-    stacktrace
+    type
   }
 }
 

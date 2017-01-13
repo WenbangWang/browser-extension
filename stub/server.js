@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({
 
 app.use('/', express.static(path.join(__dirname)))
 app.post('/log', (request, response) => {
-  console.log(request.body)
+  console.log(`Log Received on ${new Date()}`, JSON.stringify(request.body, null, 2))
   response.send()
 })
 
