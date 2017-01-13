@@ -5,13 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const rootPath = baseConfig.rootPath
 
-const config = webpackMerge({
-  customizeArray (a, b, key) {
-    if (key === 'plugins') {
-      return a.filter(plugin => (plugin.constructor && plugin.constructor.name) !== 'DefinePlugin').concat(b)
-    }
-  }
-})(baseConfig, {
+const config = webpackMerge(baseConfig, {
   output: {
     path: path.resolve(rootPath, 'manifest')
   },
@@ -25,7 +19,5 @@ const config = webpackMerge({
     })
   ]
 })
-
-console.log(config.plugins)
 
 module.exports = config
