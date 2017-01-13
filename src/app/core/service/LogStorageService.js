@@ -1,16 +1,8 @@
 'use strict'
 
-const LOG_STORAGE_CONFIG = {
-  name: 'log',
-  batchSize: 64,
-  threshold: 5120,
-  retry: 3
-}
-const BASE_URL = 'http://localhost:9090'
-
 class LogStorageService {
   /* @ngInject */
-  constructor (localStorageService, $q, $http) {
+  constructor (localStorageService, $q, $http, BASE_URL, LOG_STORAGE_CONFIG) {
     this._storage = []
     this._isFlushing = false
     this._localStorageService = localStorageService

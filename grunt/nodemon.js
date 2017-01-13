@@ -1,7 +1,9 @@
 'use strict'
 
-module.exports = {
-  stub: {
+const cloneDeep = require('lodash').cloneDeep
+
+module.exports = () => {
+  const stub = {
     script: '<%= stub.path %>/server.js',
     options: {
       ext: 'js, json, html',
@@ -11,5 +13,12 @@ module.exports = {
         '<%= stub.port %>'
       ]
     }
+  }
+  const stubHttps = cloneDeep(stub)
+  stubHttps.options.args.push('true')
+
+  return {
+    stub,
+    'stub-https': stubHttps
   }
 }

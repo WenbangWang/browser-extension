@@ -13,7 +13,7 @@ module.exports = () => {
       'webpack:app',
       'webpack:script',
       'manifest:dev',
-      'nodemon:stub'
+      'nodemon:stub-https'
     ]
   }
 }

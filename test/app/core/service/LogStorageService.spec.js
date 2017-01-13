@@ -5,7 +5,6 @@ describe('LogStorageService', () => {
   const $qBluebirdPolyfill = require('../../../helper/$q-bluebird-polyfill')
   const LOG_STORAGE_CONFIG = {
     name: 'log',
-    batchSize: 64,
     threshold: 5120,
     retry: 3
   }
@@ -29,7 +28,7 @@ describe('LogStorageService', () => {
 
   beforeEach(() => {
     $q = $qBluebirdPolyfill()
-    logStorageService = new LogStorageService(localStorageService, $q, $http)
+    logStorageService = new LogStorageService(localStorageService, $q, $http, BASE_URL, LOG_STORAGE_CONFIG)
   })
 
   afterEach(() => {

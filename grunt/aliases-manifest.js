@@ -6,13 +6,13 @@ const jsonfile = require('jsonfile')
 const path = require('path')
 const manifestPath = path.join(__dirname, '../manifest/manifest.json')
 
-module.exports = grunt => {
+module.exports = (grunt, options) => {
   return {
     'manifest:dev': function () {
       const manifest = copy(manifestTemplate)
       const policy = new Policy(manifest.content_security_policy)
       // change content security policy - connect-src to localhost.
-      policy.set('connect-src', 'localhost')
+      policy.set('connect-src', `https://localhost:${options.stub.port}`)
 
       manifest.content_security_policy = policy.toString()
       grunt.log.ok(`Manifest created at ${manifestPath}`)
