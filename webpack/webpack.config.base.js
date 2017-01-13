@@ -89,6 +89,9 @@ const config = {
   plugins: [
     bootstrapExtractTextPlugin,
     appExtractTextPlugin,
+    new webpack.DefinePlugin({
+      OVERRIDE_BASE_URL: false
+    }),
     // checkout webpack-md5-hash plugin
     new webpack.optimize.CommonsChunkPlugin(/* chunkName= */'vendor', /* filename= */'vendor.bundle.js'),
     new webpack.ProvidePlugin({

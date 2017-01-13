@@ -8,6 +8,7 @@ const LogStorageService = require('./service/LogStorageService')
 
 const i18nConfig = require('./config/i18n')
 const logConfig = require('./config/log')
+const overrideConfig = require('./config/override')
 
 const run = require('./run-block')
 
@@ -24,5 +25,6 @@ module.exports =
     .service('logStorageService', LogStorageService)
     .config(i18nConfig)
     .config(logConfig)
+    .config(overrideConfig)
     .run(run)
     .name
