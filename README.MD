@@ -39,7 +39,12 @@ Either way above works fine. Choose anyone you preferred.
 ## Application
 
 ### Overview
-The whole application uses `angular` to build and uses HTTP to communicate between app and server. 
+The whole application uses `angular` to build and uses HTTP to communicate between app and server.
+ 
+### Config
+All the app level configurations should go into [here](src/app/core/constant) as constants and define them with the app module.
+
+You can also override the config either through compiling (Using webpack `DefinePlugin`) or define a global object on `window` as `_extensionConfig` with configurations you want to override. Note that if you override them in both ways, the global object on `window` will take precedence over webpack `DefinePlugin`.
 
 ### Internalization
 `angular-translate` is used for i18n purpose. [I18n Config](src/app/core/config/i18n.js) for configuring all the supported languages (For now, only English), loading `*.properties` files and converting `*.properties` files into `json` (by `webpack`). 
@@ -49,6 +54,19 @@ As mentioned in [folder structure](#folder-structure), there is a mocked version
  
 Browser extension api provides both `sync` version as well as `async` version for some methods. In order to unify apis, all the methods will use `async` version. The tricky part of using unified `async` apis is: it does not use the `errorback` style of callback, instead, it sets `runtime.lastError` when calls the callback. Also, you still need to apply the `async` calls into `angular` context. In order to make the apis standard across the app, a thin layer of wrapper is created for the purpose (See [here](src/app/browser)).
 
+### Logging
+The app decorates all the log methods (log, info, warn, debug, error) by building a log message payload and adding to a log storage. A special case would be when the first argument is an instance of Error, it will add a `stacktrace` into the payload. 
+
+```
+The old implementation is to procude stacktraces for all the log methods. But due to the performance issue, it was changed to the current implementation.
+```
+
+All the persisted logs will be flushed periodically to a backend service by a timer in background of the app. 
+
+````
+TODO
+The stacktrace is generated from source map for a better debugging right now. But for the intellectual property sake, the source map should not be delivered together with the minified code. In that case, the backend service should be responsible to parse the stacktrace from minified code by the same version of source map generated from the build.
+````
 
 ## Extension
 

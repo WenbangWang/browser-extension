@@ -195,6 +195,7 @@ module.exports = LogStorageService
 /**
  * @typedef {Object} LogBody
  *
+ * @property {Number} version // TODO Do we need this to indicate which version of code the log is from?
  * @property {Number} timestamp
  * @property {String} type - Log type.
  * @property {Array} message - Log messages.
