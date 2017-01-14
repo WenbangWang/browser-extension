@@ -11,9 +11,9 @@ describe('run block', () => {
 
   const logStorageService = {
     isFlushing: () => {},
-    isEmpty: () => {},
     flush: () => {},
-    clear: () => {}
+    clear: () => {},
+    size: () => {}
   }
   const $log = {
     error: () => {}
@@ -27,17 +27,19 @@ describe('run block', () => {
 
   beforeEach(() => {
     sinon.stub(logStorageService, 'isFlushing').returns(false)
-    sinon.stub(logStorageService, 'isEmpty')
     sinon.stub(logStorageService, 'flush')
     sinon.stub(logStorageService, 'clear')
+    sinon.stub(logStorageService, 'size')
+
     sinon.spy($log, 'error')
   })
 
   afterEach(() => {
     logStorageService.isFlushing.restore()
-    logStorageService.isEmpty.restore()
     logStorageService.flush.restore()
     logStorageService.clear.restore()
+    logStorageService.size.restore()
+
     $log.error.restore()
   })
 
@@ -45,7 +47,7 @@ describe('run block', () => {
     let flush
 
     beforeEach(() => {
-      flush = run.logFlusher(logStorageService, $q, $log)
+      flush = run.logFlusher(logStorageService, $q, $log, LOG_FLUSHER_CONFIG)
     })
 
     it('should do nothing when the logStorageService is flushing', () => {
@@ -53,19 +55,19 @@ describe('run block', () => {
 
       return flush().then(() => {
         logStorageService.isFlushing.should.have.been.called
-        logStorageService.isEmpty.should.have.not.been.called
+        logStorageService.size.should.have.not.been.called
       })
     })
 
-    it('should check if the log storage is empty or not before proceeding', () => {
-      logStorageService.isEmpty.returns($q.resolve(true))
+    it('should check the log storage size before proceeding', () => {
+      logStorageService.size.returns($q.resolve(true))
 
-      return flush().then(() => logStorageService.isEmpty.should.have.been.called)
+      return flush().then(() => logStorageService.size.should.have.been.called)
     })
 
-    describe('storage is empty', () => {
+    describe('storage is less than the batch size', () => {
       beforeEach(() => {
-        logStorageService.isEmpty.returns($q.resolve(true))
+        logStorageService.size.returns($q.resolve(LOG_FLUSHER_CONFIG.batchSize / 2))
       })
 
       it('should do nothing by returning a promise which resolves by nothing and not calling flush', () => {
@@ -73,9 +75,9 @@ describe('run block', () => {
       })
     })
 
-    describe('storage is not empty', () => {
+    describe('storage is more than batch size', () => {
       beforeEach(() => {
-        logStorageService.isEmpty.returns($q.resolve(false))
+        logStorageService.size.returns($q.resolve(LOG_FLUSHER_CONFIG.batchSize * 2))
       })
 
       it('should flush the storage', () => {

@@ -12,6 +12,11 @@ class LogStorageService {
     this._$http = $http
   }
 
+  /**
+   * The method will return storage source from local storage if it is not flushing, otherwise, return in-memory storage instead.
+   *
+   * @returns {Promise.<Array>} A promise which will <b>always be resolved</b> with an array.
+   */
   getStorageSource () {
     if (!this.isFlushing()) {
       return this.getStorageSourceFromLocalStorage()
@@ -20,6 +25,14 @@ class LogStorageService {
     return this._$q.resolve(this._storage)
   }
 
+  /**
+   * The method will try to get data from local storage by the browser API. If there is no such storage, it will create a new storage with empty array ([])
+   *
+   * When it failed, it will fallback to resolve with the in-memory storage.
+   *
+   *
+   * @returns {Promise.<Array>} A promise which will <b>always be resolved</b> with an array.
+   */
   getStorageSourceFromLocalStorage () {
     return this._localStorageService.get(this._CONFIG.name)
       .then(data => data && data[this._CONFIG.name])
@@ -46,6 +59,12 @@ class LogStorageService {
       })
   }
 
+  /**
+   * Add {@link LogBody} to the storage source. If it is flushing, add to in-memory storage instead.
+   *
+   * @param {LogBody} log
+   * @returns {Promise} A promise which will <b>always be resolved</b>.
+   */
   add (log) {
     return this.getStorageSource()
       .then(source => {
@@ -74,19 +93,36 @@ class LogStorageService {
       })
   }
 
+  /**
+   *
+   * @returns {Promise.<Number>} A promise which will <b>always be resolved</b> with the size.
+   */
   size () {
     return this.getStorageSource()
       .then(sizeOf)
   }
 
+  /**
+   *
+   * @returns {Promise.<Boolean>} A promise which will <b>always be resolved</b> with is empty or not.
+   */
   isEmpty () {
     return this.size().then(size => size === 0)
   }
 
+  /**
+   *
+   * @returns {Boolean}
+   */
   isFlushing () {
     return this._isFlushing
   }
 
+  /**
+   * Clear both the in-memory storage and the local storage.
+   *
+   * @returns {Promise} A promise which will be resolved when clear succeeded and rejected when failed.
+   */
   clear () {
     this._storage = []
     const storage = {}
@@ -94,6 +130,20 @@ class LogStorageService {
     return this._localStorageService.set(storage)
   }
 
+  /**
+   * It will flush the local storage to a service by posting data from local storage. It won't flush again if the last flushing does not finish yet.
+   *
+   * On flush succeed, whatever in-memory storage has will be copied to local storage and the in-memory storage will be wiped out.
+   *
+   * There are couple scenarios which flush will be rejected:
+   * 1. After a couple times of retry (depends on the config) posting, it still not able to persist the logs.
+   * 2. Retry does not meet the retry limit but the size of logs  (depends on the config) are too large. This case shouldn't even happen. It only exists in theory just in case the memory got blow up.
+   * 3. The copy from in-memory storage to local storage failed.
+   *
+   * All scenarios above would reject the promise and the client of this service should take of it. Normally, using {@link LogStorageService#clear} should be sufficient.
+   *
+   * @returns {Promise} A promise which will be resolved when flush succeeded and rejected when failed.
+   */
   flush () {
     if (!this.isFlushing()) {
       this._isFlushing = true
@@ -141,3 +191,13 @@ function sizeOf (source) {
 }
 
 module.exports = LogStorageService
+
+/**
+ * @typedef {Object} LogBody
+ *
+ * @property {Number} timestamp
+ * @property {String} type - Log type.
+ * @property {Array} message - Log messages.
+ * @property {String} [context] - The context where log is logger.
+ * @property {Array<StackFrame>} [stacktrace] - Stacktrace frame from presented error.
+ */
