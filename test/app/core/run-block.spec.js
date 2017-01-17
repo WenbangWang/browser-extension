@@ -133,7 +133,7 @@ describe('run block', () => {
       it('should get logFlusher', () => {
         run(logStorageService, setInterval, $q, $log, LOG_FLUSHER_CONFIG)
 
-        run.logFlusher.should.have.been.calledWithExactly(logStorageService, $q, $log)
+        run.logFlusher.should.have.been.calledWithExactly(logStorageService, $q, $log, LOG_FLUSHER_CONFIG)
       })
 
       it('should not run logFlusher when the interval does not meet', () => {

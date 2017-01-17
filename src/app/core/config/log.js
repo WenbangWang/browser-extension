@@ -23,13 +23,13 @@ function logDecorator ($delegate, $injector) {
 }
 
 function getLoggers ($injector, originalReference, context) {
-  const methods = ['log', 'info', 'warn', 'debug', 'error']
   const loggers = {}
 
-  methods.reduce((map, method) => {
+  Object.keys(originalReference).reduce((map, method) => {
     map[method] = function () {
       const message = [].slice.call(arguments)
       originalReference[method].apply(null, arguments)
+      // This has to be inside of each individual function to avoid circular dependency.
       const logStorageService = $injector.get('logStorageService')
       const potentialError = message[0]
       const logBody = buildLogBody(method)
@@ -41,14 +41,13 @@ function getLoggers ($injector, originalReference, context) {
 
         logBody.message = potentialError.message
         logBody.stacktrace = stacktrace
-
-        logStorageService.add(logBody)
       } else {
         logBody.message = message
-
-        logStorageService.add(logBody)
       }
+
+      logStorageService.add(logBody)
     }
+
     return map
   }, loggers)
 

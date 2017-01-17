@@ -63,6 +63,29 @@ The old implementation is to procude stacktraces for all the log methods. But du
 
 All the persisted logs will be flushed periodically to a backend service by a timer in background of the app. 
 
+#### LogBody Model
+```
+{
+  "timestamp": 2343456563456,
+  "type": "error",
+  "message": "message",
+  ["context": "context",]
+  ["stacktrace": {StackFrame}]
+}
+```
+
+`context` and `stacktrace` can be optional. `context` will be defined when the log instance is instantiated with `getInstance`. `stacktrace` will be defined when the first argument of log method is an instance of error.
+
+#### Usage
+```javascript
+const logger = $log.getInstance('Logger Context')
+logger.log('log')
+logger.info('info')
+logger.warn('warn')
+logger.debug('debug')
+logger.error('error')
+```
+
 ````
 TODO
 The stacktrace is generated from source map for a better debugging right now. But for the intellectual property sake, the source map should not be delivered together with the minified code. In that case, the backend service should be responsible to parse the stacktrace from minified code by the same version of source map generated from the build.
