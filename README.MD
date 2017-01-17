@@ -88,7 +88,7 @@ logger.error('error')
 
 ````
 TODO
-The stacktrace is generated from source map for a better debugging right now. But for the intellectual property sake, the source map should not be delivered together with the minified code. In that case, the backend service should be responsible to parse the stacktrace from minified code by the same version of source map generated from the build.
+The stacktrace is generated from source map for a better debugging right now. But for the intellectual property sake, the source map should not be delivered together with the minified code. In that case, the backend service should be responsible to parse the stacktrace from minified code by the same version of source map generated from the build. Check this (https://github.com/mozilla/source-map/) out.
 ````
 
 ## Extension

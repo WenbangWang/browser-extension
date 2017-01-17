@@ -19,7 +19,13 @@ module.exports = grunt => {
       },
       coverage: {
         path: 'coverage',
-        excludes: ['**/browser-api-mock/**/*.js']
+        excludes: ['**/browser-api-mock/**/*.js'],
+        check: {
+          lines: 100,
+          statements: 100,
+          branches: 100,
+          functions: 100
+        }
       },
       stub: {
         path: 'stub',
