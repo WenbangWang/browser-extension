@@ -16,7 +16,4 @@ const config = webpackMerge(baseConfig, {
   ]
 })
 
-// add webpack dev server into app entry point to enable inline refresh mode
-config.entry.app.unshift('webpack-dev-server/client?http://localhost:8080/')
-
 module.exports = config

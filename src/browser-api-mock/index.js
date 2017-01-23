@@ -3,4 +3,5 @@
 const self = module.exports
 
 self.storage = require('./storage')
-self.runtime = {}
+self.runtime = require('./runtime')
+self.tabs = require('./tabs')

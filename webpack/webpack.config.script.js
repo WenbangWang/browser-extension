@@ -1,14 +1,15 @@
 const devExtensionConfig = require('./webpack.config.dev.extension')
 
 const entry = {
-  background: './src/background.js',
-  'content-script': './src/content-script.js'
+  'background-script': ['./src/background-script/index.js'],
+  'content-script': ['./src/content-script/index.js']
 }
 
 const config = {
   entry,
   output: devExtensionConfig.output,
-  resolve: devExtensionConfig.resolve
+  resolve: devExtensionConfig.resolve,
+  devtool: '#source-map'
 }
 
 module.exports = config

@@ -6,11 +6,12 @@
   "version": "0.1",
   "background": {
     "scripts": [
-      "background.js"
+      "background-script.js"
     ]
   },
   "permissions": [
-    "storage"
+    "storage",
+    "tabs"
   ],
   "content_scripts": [
     {
@@ -22,9 +23,9 @@
       ]
     }
   ],
+  "browser_action": {},
   "web_accessible_resources": [
-    "index.html",
-    "package.json"
+    "index.html"
   ],
   "content_security_policy": "default-src 'none'; connect-src https://*.ebay.com/ http://*.ebay.com/"
 }

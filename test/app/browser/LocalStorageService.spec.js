@@ -8,17 +8,21 @@ describe('LocalStorageService', () => {
   })
   const $qBluebirdPolyfill = require('../../helper/$q-bluebird-polyfill')
 
+  const wrappedFunction = () => {}
+
   let localStorageService
   let $q
+  let wrapAsyncFunction
 
   beforeEach(() => {
     sinon.stub(browser.storage.local, 'get')
     sinon.stub(browser.storage.local, 'set')
+    wrapAsyncFunction = sinon.spy()
   })
 
   beforeEach(() => {
     $q = $qBluebirdPolyfill()
-    localStorageService = new LocalStorageService($q)
+    localStorageService = new LocalStorageService($q, wrapAsyncFunction)
   })
 
   afterEach(() => {
@@ -27,44 +31,28 @@ describe('LocalStorageService', () => {
   })
 
   describe('get', () => {
-    it('should return a promise which resolves to the callback parameter', () => {
-      const value = 123
-      browser.storage.local.get.callsArgWith(1, value)
-
-      return localStorageService.get('test')
-        .then(val => expect(val).to.equal(value))
+    it('should wrap browser.storage.local.get', () => {
+      wrapAsyncFunction.should.have.been.calledWithExactly(browser.storage.local.get, browser.storage.local, $q)
     })
 
-    it('should reject the returned promise if runtime.lastError is not null', () => {
-      browser.runtime.lastError = 'error'
-      browser.storage.local.get.callsArg(1)
+    it('should assign wrapped function to get', () => {
+      wrapAsyncFunction = () => wrappedFunction
+      localStorageService = new LocalStorageService($q, wrapAsyncFunction)
 
-      return localStorageService.get('test')
-        .catch(error => {
-          expect(error).to.equal(browser.runtime.lastError)
-          delete browser.runtime.lastError
-        })
+      expect(localStorageService.get).to.equal(wrappedFunction)
     })
   })
 
   describe('set', () => {
-    it('should return a promise which resolves to the callback parameter', () => {
-      const value = 123
-      browser.storage.local.set.callsArgWith(1, value)
-
-      return localStorageService.set('test')
-        .then(val => expect(val).to.equal(value))
+    it('should wrap browser.storage.local.set', () => {
+      wrapAsyncFunction.should.have.been.calledWithExactly(browser.storage.local.set, browser.storage.local, $q)
     })
 
-    it('should reject the returned promise if runtime.lastError is not null', () => {
-      browser.runtime.lastError = new Error()
-      browser.storage.local.set.callsArg(1)
+    it('should assign wrapped function to set', () => {
+      wrapAsyncFunction = () => wrappedFunction
+      localStorageService = new LocalStorageService($q, wrapAsyncFunction)
 
-      return localStorageService.set('test')
-        .catch(error => {
-          expect(error).to.equal(browser.runtime.lastError)
-          delete browser.runtime.lastError
-        })
+      expect(localStorageService.set).to.equal(wrappedFunction)
     })
   })
 })
