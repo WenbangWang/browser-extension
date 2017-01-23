@@ -1,6 +1,6 @@
-**PLEASE update the documentation (includes jsdoc) accordingly when you make any changes to the code!!!**<br/>
-**PLEASE update the documentation (includes jsdoc) accordingly when you make any changes to the code!!!**<br/>
-**PLEASE update the documentation (includes jsdoc) accordingly when you make any changes to the code!!!**<br/>
+**PLEASE update the documentation (including jsdoc) accordingly when you make any changes to the code!!!**<br/>
+**PLEASE update the documentation (including jsdoc) accordingly when you make any changes to the code!!!**<br/>
+**PLEASE update the documentation (including jsdoc) accordingly when you make any changes to the code!!!**<br/>
 
 # Setup
 
@@ -42,22 +42,27 @@ Either way above works fine. Choose anyone you preferred.
 ## Application
 
 ### Overview
+
 The whole application uses `angular` to build and uses HTTP to communicate between app and server.
  
 ### Config
+
 All the app level configurations should go into [here](src/app/core/constant) as constants and define them with the app module.
 
 You can also override the config either through compiling (Using webpack `DefinePlugin`) or define a global object on `window` as `_extensionConfig` with configurations you want to override. Note that if you override them in both ways, the global object on `window` will take precedence over webpack `DefinePlugin`.
 
 ### Internalization
+
 `angular-translate` is used for i18n purpose. [I18n Config](src/app/core/config/i18n.js) for configuring all the supported languages (For now, only English), loading `*.properties` files and converting `*.properties` files into `json` (by `webpack`). 
 
 ### Browser Extension API
+
 As mentioned in [folder structure](#folder-structure), there is a mocked version of browser extension api which will be used when build the application as a replacement of the actual browser extension api. Every time a new browser extension api is used, a mocked version of that api needs to be created accordingly.
  
 Browser extension api provides both `sync` version as well as `async` version for some methods. In order to unify apis, all the methods will use `async` version. The tricky part of using unified `async` apis is: it does not use the `errorback` style of callback, instead, it sets `runtime.lastError` when calls the callback. Also, you still need to apply the `async` calls into `angular` context. In order to make the apis standard across the app, a thin layer of wrapper is created for the purpose (See [here](src/app/browser)).
 
 #### Communicate to Unreachable Browser Extension API and Content Script
+
 There are really limited APIs available in the app runtime (only `storage`, `runtime`, `i18n` and `extension`) and we also need talking to `content_script` to prevent app from directly accessing the host page DOM. 
 
 Fortunately, browser extension API leaves a `runtime.sendMessage` way to communicate to the outside world (extension runtime) and even better, the method has a callback which will be triggered when the message listener sends a response back. With this mechanism, we can abstract the interaction between app and browser extension API/content_script into a request/response (or client/server, RPC) pattern. Within this mode, the client AKA app does not and should not even care about where the server is and how it handles the request. 
@@ -65,6 +70,7 @@ Fortunately, browser extension API leaves a `runtime.sendMessage` way to communi
 ![messaging communication](doc/images/messaging-communication.jpg)
 
 ### Logging
+
 The app decorates all the log methods (log, info, warn, debug, error) by building a log message payload and adding to a log storage. A special case would be when the first argument is an instance of Error, it will add a `stacktrace` into the payload. 
 
 ```
@@ -74,6 +80,7 @@ The old implementation is to procude stacktraces for all the log methods. But du
 All the persisted logs will be flushed periodically to a backend service by a timer in background of the app. 
 
 #### LogBody Model
+
 ```
 {
   "timestamp": 2343456563456,
@@ -87,6 +94,7 @@ All the persisted logs will be flushed periodically to a backend service by a ti
 `context` and `stacktrace` can be optional. `context` will be defined when the log instance is instantiated with `getInstance`. `stacktrace` will be defined when the first argument of log method is an instance of error.
 
 #### Usage
+
 ```javascript
 const logger = $log.getInstance('Logger Context')
 logger.log('log')
@@ -104,14 +112,18 @@ The stacktrace is generated from source map for a better debugging right now. Bu
 ## Extension
 
 ### Background Page
+
 The background page or even event page which as the name indicates should be a centralized space to register and handler different events. 
 
 This is the "`server`" part of client/server model between app and the outside world including some app-unreachable browser extension API and delegate "request" to content script for some host page DOM behaviors.
 
 ### Content Script
+
 The content script is the script which browser extension will "insert" into (kind of) web page depends on the match rules in `manifest.json`. 
 
 In our case, content script is mainly responsible for executing different page parsing rules on different pages. Besides parsing pages, it is also a "`server`" within the messaging client/server model. It takes delegated "request" from app through background page.
+
+Reason not using [host page communication](https://developer.chrome.com/extensions/content_scripts#host-page-communication): it is easy to only do pub/sub but what we need is to initiate a command to the browser API to execute and most of times the command will return a result/response to the app which requires another round-trip pub/sub event. 
 
 ## Unit Test
 
