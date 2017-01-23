@@ -14,7 +14,6 @@ const contentScriptDelegatorHandler = new ListenerMessageHandler()
 delegatableCommands.forEach(command => contentScriptDelegatorHandler.add(command, contentScriptDelegator.delegateToCurrentActiveTab, contentScriptDelegator))
 
 const runtimeMessageListener = new MessageListener()
-
 runtimeMessageListener.addMessageHandler(contentScriptDelegatorHandler)
 
 browser.runtime.onMessage.addListener(function () {
@@ -22,6 +21,5 @@ browser.runtime.onMessage.addListener(function () {
 })
 
 browser.browserAction.onClicked.addListener(tab => {
-  console.log(tab)
   contentScriptDelegator.delegateToTab(tab, {command: MessagingCommandEnum.TOGGLE_APP})
 })
