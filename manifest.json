@@ -1,16 +1,31 @@
 {
   "manifest_version": 2,
-  "name": "ng-Todo",
-  "description": "Minimal todo app for minimalist",
-  "short_name": "ng-Todo",
-  "version": "0.1",
-  "browser_action": {
-    "default_popup": "index.html",
-    "default_icon": "images/logo.png"
+  "name": "Vue-Todo",
+  "description": "Minimal todo app for Vue",
+  "short_name": "Vue-Todo",
+  "version": "0.0.0.1",
+  "background": {
+    "scripts": [
+      "background-script.js"
+    ]
   },
   "permissions": [
-    "debugger",
-    "storage"
+    "storage",
+    "tabs"
   ],
-  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'"
+  "content_scripts": [
+    {
+      "js": [
+        "content-script.js"
+      ],
+      "matches": [
+        "*://*.ebay.com/*"
+      ]
+    }
+  ],
+  "browser_action": {},
+  "web_accessible_resources": [
+    "index.html"
+  ],
+  "content_security_policy": "default-src 'self'; connect-src https://*.ebay.com/ http://*.ebay.com/; img-src http://*.ebaystatic.com/ http://*.ebayimg.com/"
 }
