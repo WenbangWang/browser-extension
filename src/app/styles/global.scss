@@ -1,0 +1,5 @@
+@import "mixins";
+
+body {
+  @include overlayWithOpacity(1, 255, 255, 255) // White and not transparent, need to change later on.
+}

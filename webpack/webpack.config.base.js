@@ -12,7 +12,7 @@ const rootPath = helper.rootPath
 const config = {
   entry: {
     app: ['./src/app/bootstrap.js'],
-    vendor: ['vue', 'vuex', 'vue-i18n', 'vue-router', 'vuex-router-sync', 'bootstrap-vue', 'lodash.merge']
+    vendor: ['vue', 'vuex', 'vue-i18n', 'vue-router', 'vuex-router-sync', 'bootstrap-vue', 'lodash.merge', 'js-logger', 'error-stack-parser']
   },
   output: {
     filename: '[name].js'
@@ -67,7 +67,6 @@ const config = {
         }
       },
       {
-        // TODO hook editing to browser see https://github.com/webpack/css-loader and https://medium.com/@toolmantim/getting-started-with-css-sourcemaps-and-in-browser-sass-editing-b4daab987fb0#.1tmdpau2c
         test: /\.scss/,
         exclude: /node_modules/,
         loader: appExtractTextPlugin.extract(

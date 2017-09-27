@@ -2,7 +2,7 @@ node_modules/
 .idea
 *.iml
 coverage/
-manifest/
+/manifest
 build/
 *.log
 log/

@@ -4,9 +4,17 @@ const webpack = require('webpack')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 const config = {
+  resolve: {
+    alias: {
+      vue$: 'vue/dist/vue.runtime.min.js'
+    }
+  },
   plugins: [
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'production'
+      NODE_ENV: 'production',
+      EXTENSION_CONFIG: {
+        logLevel: 'error'
+      }
     }),
     new UglifyJSPlugin({
       parallel: true,

@@ -19,7 +19,8 @@ module.exports = (grunt, options) => {
       },
       headers: {
         'Access-Control-Allow-Origin': '*'
-      }
+      },
+      hot: true
     },
 
     default: {

@@ -32,6 +32,7 @@ Either way above works fine. Choose anyone you preferred.
     /background-script  - Background script
     /browser-api    - A wrapper over browser extension api
     /browser-api-mock   - A mocked version of the api wrapper
+    /constants    - Constants shared between scripts and app    
     /content-script    - Content script
     /lib    - Shared libraries
 /stub   - stub server
@@ -53,9 +54,13 @@ All the app level configurations should go into [here](src/app/config.js).
 
 You can also override the config either through compiling (Using webpack `EnvironmentPlugin`) or define a global object on `window` as `__epnExtensionConfig` with configurations you want to override. Note that if you override them in both ways, the global object on `window` will take precedence over webpack `EnvironmentPlugin`.
 
-### Internalization
+#### App Mode
 
-`vue-i18n` is used for i18n purpose. [I18n Config](src/app/i18n-languages.js) for configuring all the supported languages (For now, only English), loading `*.properties` files and converting `*.properties` files into `json` (by `webpack`).
+There are two app modes defined in the config. There are certain scenarios where it is being used to let the application knows about which mode it is running on.
+
+### Internationalization
+
+`vue-i18n` is used for i18n purpose. [I18n Config](src/app/i18n.js) is for converting `*.properties` files into `json` (by `webpack`) and load them into `vue-i18n` context. `AppLanguageService` is the place to abstract self defined locale and browser UI locale.
 
 ### State
 
@@ -81,6 +86,26 @@ There are really limited APIs available in the app runtime (only `storage`, `run
 Fortunately, browser extension API leaves a `runtime.sendMessage` way to communicate to the outside world (extension runtime) and even better, the method has a callback which will be triggered when the message listener sends a response back. With this mechanism, we can abstract the interaction between app and browser extension API/content_script into a request/response (or client/server, RPC) pattern. Within this mode, the client AKA app does not and should not even care about where the server is and how it handles the request. 
 
 ![messaging communication](doc/images/messaging-communication.jpg)
+
+### Logging
+
+[js-logger](https://github.com/jonnyreeves/js-logger) is used internally. As mentioned earlier, there are two modes: app mode and extension mode. For app mode, it uses all methods `js-logger` supports and log directly to browser console. For extension mode, it will proxy the logs to `background-page` and print out there with only certain levels defined [here](src/constants/LoggerCommand.js). You can also override the log level in the `EXTENSION_CONFIG` (during compile time) or on `window[${CONFIG_OVERRIDE_KEY}]` (during runtime) by doing `logLevel: String`. 
+
+To support more log levels, one needs to add a command [here](src/constants/LoggerCommand.js), creat a mapping between `js-logger` level and the command in the app logger and add a message handler in `background-page`.
+
+#### Usage
+```javascript
+import logger from './src/app/logger'
+
+logger.info('info')
+logger.error(new Error())
+// ...
+
+// Or you can create a new logger instance.
+const componentLogger = logger.getInstance('component')
+
+// and you can use all the log methods on this instance.
+```
 
 ## Extension
 

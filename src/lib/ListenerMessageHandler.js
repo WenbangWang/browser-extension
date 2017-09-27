@@ -22,9 +22,10 @@ export default class ListenerMessageHandler {
 
   /**
    * To execute a single behavior based on the existence of the given command.
-   * Return false if it does not exist otherwise execute the behavior with message, sender, sendResponse and return true.
+   * Return false if it does not exist
+   * otherwise execute the behavior with message, sender, sendResponse and return the value "behavior" returned if it is boolean or return true by default.
    *
-   * @param {MessagingCommandEnum | String} command
+   * @param {String} command
    * @param {MessagePayload} message - Message payload object to be passed along.
    * @param {String} sender - ID represents sender.
    * @param {sendResponseCallback} sendResponse - A callback function to be called to send response to the message sender.
@@ -36,17 +37,19 @@ export default class ListenerMessageHandler {
       return false
     }
 
-    behavior.call(this._commandContextMap[command], message, sender, sendResponse)
+    const result = behavior.call(this._commandContextMap[command], message, sender, sendResponse)
 
-    return true
+    return typeof result === 'boolean' ? result : true
   }
 
   /**
    * To add command and behavior to the message handler.
    *
-   * @param {MessagingCommandEnum | String} command - The command we receive for further action.
+   * @param {String} command - The command we receive for further action.
    * @param {Function} behavior - What we should do when we receive a command.
-   * @param {Object} context - The context which the behavior should run against.
+   *                              It will be invoked with a {@link MessagePayload}, a sender ID and a callback {@link sendResponseCallback}.
+   *                              Return true means it is supposed to wait for the callback {@link sendResponseCallback} to be called asynchronously.
+   * @param {Object} [context] - The context which the behavior should run against.
    * @returns {ListenerMessageHandler}
    */
   add (command, behavior, context) {
@@ -59,6 +62,13 @@ export default class ListenerMessageHandler {
 
     return this
   }
+
+  static wrapBehaviorIntoSync (behavior) {
+    return function behaviorSyncWrapper () {
+      behavior.apply(this, arguments)
+      return false
+    }
+  }
 }
 
 /**
@@ -68,6 +78,7 @@ export default class ListenerMessageHandler {
  *
  * @property {String} command
  * @property {Object} data
+ * @property {Number} [data.appId] - Optional identifier to represent where the payload is coming from.
  */
 
 /**

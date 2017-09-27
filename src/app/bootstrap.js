@@ -9,6 +9,8 @@ import App from './components/App.vue'
 
 import appStateSyncService from './lib/app-state-sync-service'
 
+import './styles/global.scss'
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 

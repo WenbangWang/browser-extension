@@ -8,7 +8,10 @@ const {webpackMergeCustomizer} = require('./helper')
 const config = webpackMerge(webpackMergeCustomizer)(baseConfig, {
   plugins: [
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      EXTENSION_CONFIG: {
+        logLevel: 'debug'
+      }
     })
   ],
   devtool: '#source-map'

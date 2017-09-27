@@ -7,6 +7,9 @@ const merge = require('lodash.merge')
 const rootPath = path.resolve(__dirname, '..')
 const webpackMergeCustomizer = {
   customizeArray (dest, src, key) {
+    // Webpack merge is concatenating arrays by default.
+    // While EnvironmentPlugin will override the environment definitions.
+    // So we are merging EnvironmentPlugin.
     if (key === 'plugins') {
       return customizedPlugins(dest, src)
     }
@@ -32,7 +35,7 @@ function customizedPlugins (dest, src) {
 }
 
 function mergedEnvironmentPlugin (destEnvironmentPlugin, srcEnvironmentPlugin) {
-  const mergedEnvironmentVariables = isEnvironmentVariableObject(destEnvironmentPlugin) && isEnvironmentVariableObject(srcEnvironmentPlugin) ? merge(destEnvironmentPlugin.defaultValues, srcEnvironmentPlugin.defaultValues) : destEnvironmentPlugin.keys
+  const mergedEnvironmentVariables = isEnvironmentVariableObject(destEnvironmentPlugin) && isEnvironmentVariableObject(srcEnvironmentPlugin) ? merge({}, destEnvironmentPlugin.defaultValues, srcEnvironmentPlugin.defaultValues) : destEnvironmentPlugin.keys
 
   return new webpack.EnvironmentPlugin(mergedEnvironmentVariables)
 }

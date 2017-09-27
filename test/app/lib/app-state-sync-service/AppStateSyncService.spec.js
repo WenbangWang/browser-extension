@@ -1,9 +1,12 @@
 import AppStateSyncService from '../../../../src/app/lib/app-state-sync-service/AppStateSyncService'
 
 describe('AppStateSyncService', () => {
-  const localStorageService = {
-    get () {},
-    set () {}
+  const runtimeMessagingClient = {
+    post () {},
+    postSync () {}
+  }
+  const appLanguageService = {
+    getCurrentLocale () {}
   }
   const vuexRouterSync = {
     sync () {}
@@ -16,10 +19,16 @@ describe('AppStateSyncService', () => {
       hash: ''
     }
   }
-  const APP_STATE_KEY = 'key'
+  const AppStateCommand = {
+    GET_OR_DEFAULT_STORE_STATE: 0,
+    GET_OR_DEFAULT_LOCALE: 1,
+    UPDATE_STORE_STATE: 2,
+    UPDATE_LOCALE: 3
+  }
   const APP_MODE = {
     WEB_APP: 'web app'
   }
+  const currentLocale = 'en'
 
   let store
   let router
@@ -28,7 +37,7 @@ describe('AppStateSyncService', () => {
   let appStateSyncService
 
   beforeEach(() => {
-    appStateSyncService = new AppStateSyncService(localStorageService, vuexRouterSync, config, window, APP_STATE_KEY, APP_MODE)
+    appStateSyncService = new AppStateSyncService(runtimeMessagingClient, appLanguageService, vuexRouterSync, config, window, AppStateCommand, APP_MODE)
 
     store = {
       replaceState () {},
@@ -47,8 +56,9 @@ describe('AppStateSyncService', () => {
   })
 
   beforeEach(() => {
-    sinon.stub(localStorageService, 'get')
-    sinon.stub(localStorageService, 'set')
+    sinon.stub(runtimeMessagingClient, 'post')
+    sinon.stub(runtimeMessagingClient, 'postSync')
+    sinon.stub(appLanguageService, 'getCurrentLocale').returns(currentLocale)
     sinon.stub(vuexRouterSync, 'sync')
 
     sinon.stub(store, 'replaceState')
@@ -59,16 +69,48 @@ describe('AppStateSyncService', () => {
   })
 
   afterEach(() => {
-    localStorageService.get.restore()
-    localStorageService.set.restore()
+    runtimeMessagingClient.post.restore()
+    runtimeMessagingClient.postSync.restore()
+    appLanguageService.getCurrentLocale.restore()
     vuexRouterSync.sync.restore()
   })
 
+  describe('constructor', () => {
+    it('should get current locale from app language service to set default state', () => {
+      appStateSyncService = new AppStateSyncService(runtimeMessagingClient, appLanguageService, vuexRouterSync, config, window, AppStateCommand, APP_MODE)
+
+      appLanguageService.getCurrentLocale.should.have.been.called // eslint-disable-line no-unused-expressions
+      expect(appStateSyncService.state.locale).to.equal(currentLocale)
+    })
+  })
+
   describe('init', () => {
-    it('should retrieve storage from localStorageService', async () => {
+    const state = {
+      storeState: {
+        foo: 1,
+        route: {
+          fullPath: '/bar'
+        }
+      },
+      locale: 'de-DE'
+    }
+
+    beforeEach(() => {
+      runtimeMessagingClient.post.withArgs(AppStateCommand.GET_OR_DEFAULT_STORE_STATE, {storeState: appStateSyncService.state.storeState}).returns(state.storeState)
+      runtimeMessagingClient.post.withArgs(AppStateCommand.GET_OR_DEFAULT_LOCALE, {locale: appStateSyncService.state.locale}).returns(state.locale)
+    })
+
+    it('should get or default with store state and locale', async () => {
       await appStateSyncService.init(store, router, i18n)
 
-      localStorageService.get.should.have.been.calledWithExactly(APP_STATE_KEY)
+      runtimeMessagingClient.post.should.have.been.calledWithExactly(AppStateCommand.GET_OR_DEFAULT_STORE_STATE, {storeState: appStateSyncService.state.storeState})
+      runtimeMessagingClient.post.should.have.been.calledWithExactly(AppStateCommand.GET_OR_DEFAULT_LOCALE, {locale: appStateSyncService.state.locale})
+    })
+
+    it('should set store state with stored value', async () => {
+      await appStateSyncService.init(store, router, i18n)
+
+      store.replaceState.should.have.been.calledWithExactly(state.storeState)
     })
 
     it('should replace the current route with location hash when the APP_MODE is WEB_APP and location hash is not base', async () => {
@@ -80,90 +122,34 @@ describe('AppStateSyncService', () => {
       router.replace.should.have.been.calledWithExactly(window.location.hash.substring(1))
     })
 
-    describe('no init state', () => {
-      beforeEach(() => {
-        localStorageService.get.resolves()
-      })
+    it('should replace the current route with stored value when APP_MODE is not WEB_APP', async () => {
+      config.appMode = ''
+      window.location.hash = '#/'
 
-      it('should set store state with default value', async () => {
-        await appStateSyncService.init(store, router, i18n)
+      await appStateSyncService.init(store, router, i18n)
 
-        store.replaceState.should.have.been.calledWithExactly(appStateSyncService.state.storeState)
-      })
-
-      it('should set i18n language with default value', async () => {
-        await appStateSyncService.init(store, router, i18n)
-
-        expect(i18n.locale).to.equal(appStateSyncService.state.locale)
-      })
-
-      it('should replace the current route with default value when APP_MODE is not WEB_APP', async () => {
-        config.appMode = ''
-        window.location.hash = '#/'
-
-        await appStateSyncService.init(store, router, i18n)
-
-        router.replace.should.have.been.calledWithExactly(appStateSyncService.state.storeState.route.fullPath)
-      })
-
-      it('should replace the current route with default value when APP_MODE is WEB_APP and location hash is on base', async () => {
-        const originFullPath = appStateSyncService.state.storeState.route.fullPath
-        appStateSyncService.state.storeState.route.fullPath = '/route'
-        config.appMode = APP_MODE.WEB_APP
-        window.location.hash = '#/'
-
-        await appStateSyncService.init(store, router, i18n)
-
-        router.replace.should.have.been.calledWithExactly(appStateSyncService.state.storeState.route.fullPath)
-
-        appStateSyncService.state.storeState.route.fullPath = originFullPath
-      })
+      router.replace.should.have.been.calledWithExactly(state.storeState.route.fullPath)
     })
 
-    describe('found state from storage', () => {
-      const state = {
-        storeState: {
-          foo: 1,
-          route: {
-            fullPath: '/bar'
-          }
-        },
-        locale: 'de-DE'
-      }
+    it('should replace the current route with stored value when APP_MODE is WEB_APP and location hash is on base', async () => {
+      config.appMode = APP_MODE.WEB_APP
+      window.location.hash = '#/'
 
-      beforeEach(() => {
-        localStorageService.get.resolves({[APP_STATE_KEY]: state})
-      })
+      await appStateSyncService.init(store, router, i18n)
 
-      it('should set store state with stored value', async () => {
-        await appStateSyncService.init(store, router, i18n)
+      router.replace.should.have.been.calledWithExactly(state.storeState.route.fullPath)
+    })
 
-        store.replaceState.should.have.been.calledWithExactly(state.storeState)
-      })
+    it('should set i18n language with stored value', async () => {
+      await appStateSyncService.init(store, router, i18n)
 
-      it('should set i18n language with stored value', async () => {
-        await appStateSyncService.init(store, router, i18n)
+      expect(i18n.locale).to.equal(state.locale)
+    })
 
-        expect(i18n.locale).to.equal(state.locale)
-      })
+    it('should sync the store state with the router state', async () => {
+      await appStateSyncService.init(store, router, i18n)
 
-      it('should replace the current route with stored value when APP_MODE is not WEB_APP', async () => {
-        config.appMode = ''
-        window.location.hash = '#/'
-
-        await appStateSyncService.init(store, router, i18n)
-
-        router.replace.should.have.been.calledWithExactly(state.storeState.route.fullPath)
-      })
-
-      it('should replace the current route with stored value when APP_MODE is WEB_APP and location hash is on base', async () => {
-        config.appMode = APP_MODE.WEB_APP
-        window.location.hash = '#/'
-
-        await appStateSyncService.init(store, router, i18n)
-
-        router.replace.should.have.been.calledWithExactly(appStateSyncService.state.storeState.route.fullPath)
-      })
+      vuexRouterSync.sync.should.have.been.calledWithExactly(store, router)
     })
 
     describe('store subscription', () => {
@@ -180,21 +166,11 @@ describe('AppStateSyncService', () => {
 
         await appStateSyncService.init(store, router, i18n)
 
-        appStateSyncService.updateStoreState.should.have.been.calledWithExactly(storeState)
+        runtimeMessagingClient.postSync.should.have.been.calledWithExactly(AppStateCommand.UPDATE_STORE_STATE, {storeState})
       })
-    })
-
-    it('should sync the store state with the router state', async () => {
-      await appStateSyncService.init(store, router, i18n)
-
-      vuexRouterSync.sync.should.have.been.calledWithExactly(store, router)
     })
 
     describe('i18n vm watcher', () => {
-      beforeEach(() => {
-        sinon.stub(appStateSyncService, 'updateLocale')
-      })
-
       it('should watch i18n vm locale changes', async () => {
         await appStateSyncService.init(store, router, i18n)
 
@@ -207,40 +183,8 @@ describe('AppStateSyncService', () => {
 
         await appStateSyncService.init(store, router, i18n)
 
-        appStateSyncService.updateLocale.should.have.been.calledWithExactly(locale)
+        runtimeMessagingClient.postSync.should.have.been.calledWithExactly(AppStateCommand.UPDATE_LOCALE, {locale})
       })
-    })
-  })
-
-  describe('updateStoreState', () => {
-    it('should update the internal storeState', async () => {
-      const storeState = {}
-
-      await appStateSyncService.updateStoreState(storeState)
-
-      expect(appStateSyncService.state.storeState).to.equal(storeState)
-    })
-
-    it('should save the current state into local storage', async () => {
-      await appStateSyncService.updateStoreState()
-
-      localStorageService.set.should.have.been.calledWithExactly({[APP_STATE_KEY]: appStateSyncService.state})
-    })
-  })
-
-  describe('updateLocale', () => {
-    it('should update the internal storeState', async () => {
-      const locale = 'de-DE'
-
-      await appStateSyncService.updateLocale(locale)
-
-      expect(appStateSyncService.state.locale).to.equal(locale)
-    })
-
-    it('should save the current state into local storage', async () => {
-      await appStateSyncService.updateLocale()
-
-      localStorageService.set.should.have.been.calledWithExactly({[APP_STATE_KEY]: appStateSyncService.state})
     })
   })
 })

@@ -13,6 +13,7 @@ const self = {}
 self.storage = chrome.storage
 self.runtime = chrome.runtime
 self.extension = chrome.extension
+self.i18n = chrome.i18n
 
 // Only accessible to background script.
 self.tabs = chrome.tabs

@@ -65,7 +65,13 @@ describe('ListenerMessageHandler', () => {
       behavior.should.have.been.calledOn(listenerMessageHandler)
     })
 
-    it('should return true if the command exists', () => {
+    it('should return the value command behavior returned if it is a boolean', () => {
+      behavior.returns(false)
+
+      expect(listenerMessageHandler.execute(command, message, sender, sendResponse)).to.be.false // eslint-disable-line no-unused-expressions
+    })
+
+    it('should return true by default', () => {
       expect(listenerMessageHandler.execute(command, message, sender, sendResponse)).to.be.true // eslint-disable-line no-unused-expressions
     })
   })
@@ -98,6 +104,33 @@ describe('ListenerMessageHandler', () => {
       sinon.stub(listenerMessageHandler, 'execute').returns(result)
 
       expect(listenerMessageHandler.run(message, sender, sendResponse)).to.equal(result)
+    })
+  })
+
+  describe('static methods', () => {
+    let behavior
+
+    beforeEach(() => {
+      behavior = sinon.spy()
+    })
+
+    describe('wrapBehaviorIntoSync', () => {
+      it('should invoke the wrapped behavior with the given arguments on the given context', () => {
+        const arg1 = 1
+        const arg2 = 2
+        const wrappedBehavior = ListenerMessageHandler.wrapBehaviorIntoSync(behavior)
+
+        wrappedBehavior.call(this, arg1, arg2)
+
+        behavior.should.have.been.calledOn(this)
+        behavior.should.have.been.calledWithExactly(arg1, arg2)
+      })
+
+      it('should return false from the wrapped behavior', () => {
+        const wrappedBehavior = ListenerMessageHandler.wrapBehaviorIntoSync(behavior)
+
+        expect(wrappedBehavior()).to.be.false // eslint-disable-line no-unused-expressions
+      })
     })
   })
 })

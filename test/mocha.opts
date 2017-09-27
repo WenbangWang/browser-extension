@@ -1,1 +1,2 @@
 --require ./test/helper/setup.js
+./test/helper/hooks.js

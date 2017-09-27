@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "Vue-Todo",
-  "description": "Minimal todo app for Vue",
-  "short_name": "Vue-Todo",
+  "name": "__MSG_name__",
+  "description": "__MSG_description__",
+  "short_name": "__MSG_shortName__",
+  "default_locale": "en",
   "version": "0.0.0.1",
   "background": {
     "scripts": [

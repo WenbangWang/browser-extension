@@ -20,4 +20,20 @@ const store = new Vuex.Store({
   }
 })
 
+if (module.hot) {
+  module.hot.accept(['./actions/todo', './mutations/todo'], () => {
+    const todoMutations = require('./mutations/todo').default
+    const todoActions = require('./actions/todo').default
+
+    store.hotUpdate({
+      mutations: {
+        ...todoMutations
+      },
+      actions: {
+        ...todoActions
+      }
+    })
+  })
+}
+
 export default store

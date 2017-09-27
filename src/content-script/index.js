@@ -1,6 +1,6 @@
 import browser from '../browser-api'
 
-import MessagingCommandEnum from '../lib/MessagingCommandEnum'
+import ShellControlCommand from '../constants/ShellControlCommand'
 
 import IFrameBuilder from './IFrameBuilder'
 import IFrameStateController from './IFrameStateController'
@@ -29,9 +29,9 @@ function buildIFrameStateMessageHandler () {
 
   const iframeStateHandler = new ListenerMessageHandler()
   iframeStateHandler
-    .add(MessagingCommandEnum.TOGGLE_APP, iframeStateController.toggle, iframeStateController)
-    .add(MessagingCommandEnum.SHOW_APP, iframeStateController.show, iframeStateController)
-    .add(MessagingCommandEnum.CLOSE_APP, iframeStateController.close, iframeStateController)
+    .add(ShellControlCommand.TOGGLE, ListenerMessageHandler.wrapBehaviorIntoSync(iframeStateController.toggle), iframeStateController)
+    .add(ShellControlCommand.SHOW, ListenerMessageHandler.wrapBehaviorIntoSync(iframeStateController.show), iframeStateController)
+    .add(ShellControlCommand.CLOSE, ListenerMessageHandler.wrapBehaviorIntoSync(iframeStateController.close), iframeStateController)
 
   return iframeStateHandler
 }
@@ -48,8 +48,7 @@ function buildIFrameStateController () {
     'right': '0',
     'margin': '0',
     'clip': 'auto',
-    'z-index': '9223372036854775807',
-    'background-color': 'white'
+    'z-index': '2147483647'
   }
   const body = document.getElementsByTagName('body')[0]
   const id = `epn-${browser.runtime.id}`
